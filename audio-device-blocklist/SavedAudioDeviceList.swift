@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct SavedAudioDevice: Codable, Identifiable {
-    let id: String
+struct SavedAudioDevice: Codable, Hashable {
+    let deviceUID: String
     let name: String
 }
 
@@ -36,34 +36,20 @@ extension Array: RawRepresentable where Element: Codable {
 
 
 extension SavedAudioDeviceList {
-    func hasDevice(audioDevice: AudioDevice) -> Bool {
-        self.contains { $0.id == audioDevice.deviceUID }
+    func hasDevice(_ audioDevice: AudioDevice) -> Bool {
+        self.contains { $0.deviceUID == audioDevice.deviceUID }
     }
     
-    mutating func addDevice(audioDevice: AudioDevice) {
-        if self.hasDevice(audioDevice: audioDevice) {
+    mutating func addDevice(_ audioDevice: AudioDevice) {
+        if self.hasDevice(audioDevice) {
             return
         }
-        self.append(SavedAudioDevice(id: audioDevice.deviceUID, name: audioDevice.name))
+        self.append(SavedAudioDevice(deviceUID: audioDevice.deviceUID, name: audioDevice.name))
     }
     
-    mutating func removeDeviceByID(id: String) {
-        if let idx = self.firstIndex(where: { $0.id == id }) {
+    mutating func removeDeviceByID(_ id: String) {
+        if let idx = self.firstIndex(where: { $0.deviceUID == id }) {
             self.remove(at: idx)
         }
-    }
-    
-    mutating func moveBefore(id: String) {
-        guard let idx = self.firstIndex(where: { $0.id == id }), idx > 0 else {
-            return
-        }
-        self.swapAt(idx, idx-1)
-    }
-    
-    mutating func moveAfter(id: String) {
-        guard let idx = self.firstIndex(where: { $0.id == id }), idx < (self.count-1) else {
-            return
-        }
-        self.swapAt(idx, idx+1)
     }
 }

@@ -43,7 +43,7 @@ class AudioContext {
         dump(device)
         
         // Check if device is blocklisted, otherwise nothing to do
-        if !self.outputBlocklist.hasDevice(audioDevice: device) {
+        if !self.outputBlocklist.hasDevice(device) {
             self.mainOutputDevice = device
             return
         }
@@ -72,7 +72,7 @@ class AudioContext {
         // Otherwise, find the best fallback
         
         for dev in self.outputFallbacks {
-            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.id }) else {
+            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.deviceUID }) else {
                 continue
             }
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice, audioObjectID: connectedDevice.id) {
@@ -97,7 +97,7 @@ class AudioContext {
         dump(device)
         
         // First check if device is blocklisted, otherwise nothing to do
-        if !self.inputBlocklist.hasDevice(audioDevice: device) {
+        if !self.inputBlocklist.hasDevice(device) {
             self.mainInputDevice = device
             return
         }
@@ -126,7 +126,7 @@ class AudioContext {
         // Otherwise, find the best fallback
         
         for dev in self.inputFallbacks {
-            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.id }) else {
+            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.deviceUID }) else {
                 continue
             }
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice, audioObjectID: connectedDevice.id) {

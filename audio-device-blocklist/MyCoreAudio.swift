@@ -13,7 +13,7 @@ func fetchAudioUInt32Property(audioObjectID: AudioObjectID, mSelector: AudioObje
         mScope: mScope,
         mElement: kAudioObjectPropertyElementMain
     )
-    
+
     var property: UInt32 = 0
     var dataSize = UInt32(MemoryLayout<UInt32>.size)
     
@@ -72,7 +72,7 @@ enum AudioStreamDirection: UInt32 {
     case input = 1
 }
 
-class AudioStream {
+struct AudioStream: Hashable {
     let audioStreamID: AudioStreamID
     let direction: AudioStreamDirection
     
@@ -86,7 +86,7 @@ class AudioStream {
     }
 }
 
-class AudioDevice: Identifiable {
+struct AudioDevice: Hashable {
     let id: AudioObjectID
     let name: String
     let deviceUID: String

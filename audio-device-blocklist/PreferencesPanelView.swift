@@ -12,6 +12,9 @@ struct PreferencesPanelView: View {
     @Binding var blocklist: SavedAudioDeviceList
     @Binding var fallbacks: SavedAudioDeviceList
     @State private var availableDevices: Array<AudioDevice>
+    @State private var selectedFallback: SavedAudioDevice?
+    @State private var selectedBlocklist: SavedAudioDevice?
+    @State private var selectedAvailable: AudioDevice?
 
     init(
         direction: AudioStreamDirection,
@@ -28,82 +31,103 @@ struct PreferencesPanelView: View {
         VStack {
             HStack {
                 Text("Available devices")
-                Button {
-                    self.availableDevices = listAudioDevices(direction: self.direction) ?? self.availableDevices
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
+                Spacer()
+                Menu("Actions") {
+                    Button {
+                        self.availableDevices = listAudioDevices(direction: self.direction) ?? self.availableDevices
+                    } label: {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                    Divider()
+                    Group {
+                        Button("Set as fallback") {
+                            guard let selected = self.selectedAvailable else {
+                                return
+                            }
+                            self.fallbacks.addDevice(selected)
+                        }
+                        .help("Add to fallbacks")
+                   
+                       Button("Block") {
+                           guard let selected = self.selectedAvailable else {
+                               return
+                           }
+                           self.blocklist.addDevice(selected)
+                       }
+                       .help("Add to blocklist")
+                    }
+                    .disabled({
+                        guard let selected = self.selectedAvailable else {
+                            return true
+                        }
+                        return self.blocklist.hasDevice(selected) || self.fallbacks.hasDevice(selected)
+                    }())
                 }
+                .fixedSize()
             }
-            List(self.availableDevices.filter {
-                !self.blocklist.hasDevice(audioDevice: $0) && !self.fallbacks.hasDevice(audioDevice: $0)
-            }) { dev in
-                HStack {
-                    Text("\(dev.name) (\(dev.deviceUID))")
-                    
+            List(self.availableDevices, id: \.id, selection: self.$selectedAvailable) { dev in
+                let stack = HStack {
+                    Text(dev.name)
                     Spacer()
-                    
-                    Button {
-                        self.fallbacks.addDevice(audioDevice: dev)
-                    } label: {
-                        Image(systemName: "checkmark.circle")
-                    }.help("Add to fallbacks")
-                    
-                    Button {
-                        self.blocklist.addDevice(audioDevice: dev)
-                    } label: {
-                        Image(systemName: "xmark.circle")
-                    }.help("Add to blocklist")
+                    Text("[\(dev.deviceUID)]").fontWeight(.thin)
+                }
+                if self.blocklist.hasDevice(dev) || self.fallbacks.hasDevice(dev) {
+                    stack.foregroundColor(.secondary)
+                } else {
+                    stack.tag(dev)
                 }
             }
             
             Divider()
-                        
-            Text("Blocklist")
-            List(self.blocklist) { dev in
-                HStack {
-                    Text("\(dev.name) (\(dev.id))")
-                    
-                    Spacer()
-                    
-                    Button {
-                        self.blocklist.removeDeviceByID(id: dev.id)
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }.help("Remove from blocklist")
+
+            HStack {
+                Text("Blocklist")
+                Spacer()
+                Button("Remove") {
+                    guard let selected = self.selectedBlocklist else {
+                        return
+                    }
+                    self.blocklist.removeDeviceByID(selected.deviceUID)
                 }
+                .help("Remove from blocklist")
+                .disabled(self.selectedBlocklist == nil)
+            }
+            List(self.blocklist, id: \.deviceUID, selection: self.$selectedBlocklist) { dev in
+                HStack {
+                    Text(dev.name)
+                    Spacer()
+                    Text("[\(dev.deviceUID)]").fontWeight(.thin)
+                }
+                .tag(dev)
             }
             
             Divider()
-                        
-            Text("Fallbacks")
-            List(self.fallbacks) { dev in
-                HStack {
-                    Text("\(dev.name) (\(dev.id))")
-                    
-                    Spacer()
-                                        
-                    Button {
-                        self.fallbacks.moveBefore(id: dev.id)
-                    } label: {
-                        Image(systemName: "chevron.up.circle")
+            
+            HStack {
+                Text("Fallbacks")
+                Spacer()
+                Text("Can be reordered, device priority from top to bottom").fontWeight(.thin)
+                Button("Remove") {
+                    guard let selected = self.selectedFallback else {
+                        return
                     }
-                    .help("Increase priority")
-                    .disabled(self.fallbacks.first?.id == dev.id)
-                    
-                    Button {
-                        self.fallbacks.moveAfter(id: dev.id)
-                    } label: {
-                        Image(systemName: "chevron.down.circle")
-                    }
-                    .help("Reduce priority")
-                    .disabled(self.fallbacks.last?.id == dev.id)
-                    
-                    Button {
-                        self.fallbacks.removeDeviceByID(id: dev.id)
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }.help("Remove from fallbacks")
+                    self.fallbacks.removeDeviceByID(selected.deviceUID)
                 }
+                .help("Remove from fallbacks")
+                .disabled(self.selectedFallback == nil)
+            }
+            List(selection: self.$selectedFallback) {
+                ForEach(self.fallbacks, id: \.deviceUID) { dev in
+                    HStack {
+                        Text(dev.name)
+                        Spacer()
+                        Text("[\(dev.deviceUID)]").fontWeight(.thin)
+                    }
+                    .tag(dev)
+                }
+                .onMove(perform: { idx, offset in
+                    self.fallbacks.move(fromOffsets: idx, toOffset: offset)
+                })
             }
         }.scenePadding()
     }
@@ -112,10 +136,11 @@ struct PreferencesPanelView: View {
 struct PreferencesPanelView_Previews: PreviewProvider {
     static var previews: some View {
         @State var blocklist = [
-            SavedAudioDevice(id: "test-id-balcklisted", name: "Test Device")
+            SavedAudioDevice(deviceUID: "test-id-blocklisted", name: "Test Device")
         ]
         @State var fallbacks = [
-            SavedAudioDevice(id: "test-id-fallback", name: "Test Device")
+            SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
+            SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
         ]
         PreferencesPanelView(
             direction: .output,

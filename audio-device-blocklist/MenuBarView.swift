@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Environment(\.openWindow) private var openWindow
-    
+
     var body: some View {
         VStack {
             Button("Preferences") {

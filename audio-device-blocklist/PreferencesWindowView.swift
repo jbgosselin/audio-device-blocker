@@ -19,7 +19,7 @@ struct PreferencesWindowView: View {
     @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = SavedAudioDeviceList()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = SavedAudioDeviceList()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = SavedAudioDeviceList()
-    
+
     var body: some View {
         TabView {
             PreferencesPanelView(
