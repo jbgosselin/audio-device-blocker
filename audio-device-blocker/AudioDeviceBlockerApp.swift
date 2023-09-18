@@ -1,6 +1,6 @@
 //
-//  AudioDeviceBlocklistApp.swift
-//  Audio Device Blocklist
+//  AudioDeviceBlockerApp.swift
+//  Audio Device Blocker
 //
 //  Created by Jean-Baptiste Gosselin on 2023-09-10.
 //
@@ -10,7 +10,7 @@ import CoreAudio
 import UserNotifications
 
 @main
-final class AudioDeviceBlocklistApp: App {
+final class AudioDeviceBlockerApp: App {
     private var audioContext: AudioContext
     
     required init() {
@@ -63,7 +63,7 @@ final class AudioDeviceBlocklistApp: App {
     }
     
     var body: some Scene {
-        MenuBarExtra("Audio Device Blocklist", systemImage: "star") {
+        MenuBarExtra("Audio Device Blocker", systemImage: "speaker.slash.circle") {
             MenuBarView()
         }
         Window("Preferences", id: "preferences") {

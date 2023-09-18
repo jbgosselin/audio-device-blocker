@@ -1,6 +1,6 @@
 //
-//  MyAudioCore.swift
-//  Audio Device Blocklist
+//  MyCoreAudio.swift
+//  Audio Device Blocker
 //
 //  Created by Jean-Baptiste Gosselin on 2023-09-17.
 //

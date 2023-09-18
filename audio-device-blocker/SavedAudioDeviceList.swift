@@ -1,6 +1,6 @@
 //
 //  SavedAudioDeviceList.swift
-//  Audio Device Blocklist
+//  Audio Device Blocker
 //
 //  Created by Jean-Baptiste Gosselin on 2023-09-18.
 //

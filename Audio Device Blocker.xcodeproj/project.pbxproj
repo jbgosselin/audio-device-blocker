@@ -10,7 +10,7 @@
 		87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87570A042AB7804B0018B84D /* MyCoreAudio.swift */; };
 		87570A082AB7C9280018B84D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87570A072AB7C9280018B84D /* CoreAudio.framework */; };
 		87570A0A2AB7C92F0018B84D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87570A092AB7C92F0018B84D /* SwiftUI.framework */; };
-		877E230E2AAD84E800D26125 /* AudioDeviceBlocklistApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877E230D2AAD84E800D26125 /* AudioDeviceBlocklistApp.swift */; };
+		877E230E2AAD84E800D26125 /* AudioDeviceBlockerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877E230D2AAD84E800D26125 /* AudioDeviceBlockerApp.swift */; };
 		877E23122AAD84E900D26125 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 877E23112AAD84E900D26125 /* Assets.xcassets */; };
 		877E23152AAD84E900D26125 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 877E23142AAD84E900D26125 /* Preview Assets.xcassets */; };
 		87B225592AB7CA9E001F545D /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B225582AB7CA9E001F545D /* MenuBarView.swift */; };
@@ -25,11 +25,11 @@
 		87570A042AB7804B0018B84D /* MyCoreAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCoreAudio.swift; sourceTree = "<group>"; };
 		87570A072AB7C9280018B84D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		87570A092AB7C92F0018B84D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		877E230A2AAD84E800D26125 /* Audio Device Blocklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Audio Device Blocklist.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		877E230D2AAD84E800D26125 /* AudioDeviceBlocklistApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceBlocklistApp.swift; sourceTree = "<group>"; };
+		877E230A2AAD84E800D26125 /* Audio Device Blocker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Audio Device Blocker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		877E230D2AAD84E800D26125 /* AudioDeviceBlockerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceBlockerApp.swift; sourceTree = "<group>"; };
 		877E23112AAD84E900D26125 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		877E23142AAD84E900D26125 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		877E23162AAD84E900D26125 /* AudioDeviceBlocklist.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioDeviceBlocklist.entitlements; sourceTree = "<group>"; };
+		877E23162AAD84E900D26125 /* AudioDeviceBlocker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioDeviceBlocker.entitlements; sourceTree = "<group>"; };
 		87B225582AB7CA9E001F545D /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowView.swift; sourceTree = "<group>"; };
 		87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPanelView.swift; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 		877E23012AAD84E800D26125 = {
 			isa = PBXGroup;
 			children = (
-				877E230C2AAD84E800D26125 /* audio-device-blocklist */,
+				877E230C2AAD84E800D26125 /* audio-device-blocker */,
 				877E230B2AAD84E800D26125 /* Products */,
 				87570A062AB7C9280018B84D /* Frameworks */,
 			);
@@ -74,17 +74,17 @@
 		877E230B2AAD84E800D26125 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				877E230A2AAD84E800D26125 /* Audio Device Blocklist.app */,
+				877E230A2AAD84E800D26125 /* Audio Device Blocker.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		877E230C2AAD84E800D26125 /* audio-device-blocklist */ = {
+		877E230C2AAD84E800D26125 /* audio-device-blocker */ = {
 			isa = PBXGroup;
 			children = (
-				877E230D2AAD84E800D26125 /* AudioDeviceBlocklistApp.swift */,
+				877E230D2AAD84E800D26125 /* AudioDeviceBlockerApp.swift */,
 				877E23112AAD84E900D26125 /* Assets.xcassets */,
-				877E23162AAD84E900D26125 /* AudioDeviceBlocklist.entitlements */,
+				877E23162AAD84E900D26125 /* AudioDeviceBlocker.entitlements */,
 				877E23132AAD84E900D26125 /* Preview Content */,
 				87570A042AB7804B0018B84D /* MyCoreAudio.swift */,
 				87B225582AB7CA9E001F545D /* MenuBarView.swift */,
@@ -93,7 +93,7 @@
 				87F285B92AB88CE7004328B5 /* AudioContext.swift */,
 				87F285BD2AB89E5C004328B5 /* SavedAudioDeviceList.swift */,
 			);
-			path = "audio-device-blocklist";
+			path = "audio-device-blocker";
 			sourceTree = "<group>";
 		};
 		877E23132AAD84E900D26125 /* Preview Content */ = {
@@ -107,9 +107,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		877E23092AAD84E800D26125 /* Audio Device Blocklist */ = {
+		877E23092AAD84E800D26125 /* Audio Device Blocker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 877E23192AAD84E900D26125 /* Build configuration list for PBXNativeTarget "Audio Device Blocklist" */;
+			buildConfigurationList = 877E23192AAD84E900D26125 /* Build configuration list for PBXNativeTarget "Audio Device Blocker" */;
 			buildPhases = (
 				877E23062AAD84E800D26125 /* Sources */,
 				877E23072AAD84E800D26125 /* Frameworks */,
@@ -119,9 +119,9 @@
 			);
 			dependencies = (
 			);
-			name = "Audio Device Blocklist";
+			name = "Audio Device Blocker";
 			productName = "audio-device-blacklist";
-			productReference = 877E230A2AAD84E800D26125 /* Audio Device Blocklist.app */;
+			productReference = 877E230A2AAD84E800D26125 /* Audio Device Blocker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -139,7 +139,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 877E23052AAD84E800D26125 /* Build configuration list for PBXProject "Audio Device Blocklist" */;
+			buildConfigurationList = 877E23052AAD84E800D26125 /* Build configuration list for PBXProject "Audio Device Blocker" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -152,7 +152,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				877E23092AAD84E800D26125 /* Audio Device Blocklist */,
+				877E23092AAD84E800D26125 /* Audio Device Blocker */,
 			);
 		};
 /* End PBXProject section */
@@ -177,7 +177,7 @@
 				87B225592AB7CA9E001F545D /* MenuBarView.swift in Sources */,
 				87F285B82AB8810E004328B5 /* PreferencesPanelView.swift in Sources */,
 				87F285BA2AB88CE7004328B5 /* AudioContext.swift in Sources */,
-				877E230E2AAD84E800D26125 /* AudioDeviceBlocklistApp.swift in Sources */,
+				877E230E2AAD84E800D26125 /* AudioDeviceBlockerApp.swift in Sources */,
 				87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */,
 				87F285BE2AB89E5C004328B5 /* SavedAudioDeviceList.swift in Sources */,
 				87B2255B2AB7CCE3001F545D /* PreferencesWindowView.swift in Sources */,
@@ -244,6 +244,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -297,6 +298,7 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -305,14 +307,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "audio-device-blocklist/AudioDeviceBlocklist.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "audio-device-blocker/AudioDeviceBlocker.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"audio-device-blocklist/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "audio-device-blocker/Preview\\ Content";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocklist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocker";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -322,7 +324,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocklist";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -334,14 +336,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "audio-device-blocklist/AudioDeviceBlocklist.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "audio-device-blocker/AudioDeviceBlocker.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"audio-device-blocklist/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "audio-device-blocker/Preview\\ Content";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocklist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocker";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -351,7 +353,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocklist";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -361,7 +363,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		877E23052AAD84E800D26125 /* Build configuration list for PBXProject "Audio Device Blocklist" */ = {
+		877E23052AAD84E800D26125 /* Build configuration list for PBXProject "Audio Device Blocker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				877E23172AAD84E900D26125 /* Debug */,
@@ -370,7 +372,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		877E23192AAD84E900D26125 /* Build configuration list for PBXNativeTarget "Audio Device Blocklist" */ = {
+		877E23192AAD84E900D26125 /* Build configuration list for PBXNativeTarget "Audio Device Blocker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				877E231A2AAD84E900D26125 /* Debug */,

@@ -1,6 +1,6 @@
 //
 //  MenuBarView.swift
-//  Audio Device Blocklist
+//  Audio Device Blocker
 //
 //  Created by Jean-Baptiste Gosselin on 2023-09-17.
 //
@@ -12,6 +12,8 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack {
+            Text("Audio Device Blocker").foregroundColor(.secondary)
+            Divider()
             Button("Preferences") {
                 openWindow(id: "preferences")
             }
