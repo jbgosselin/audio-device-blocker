@@ -30,7 +30,7 @@ func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectP
         return nil
     }
     
-    return boundPtr.pointee
+    return boundPtr.move()
 }
 
 func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector) -> Array<T>? {
@@ -85,13 +85,15 @@ func setAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPro
     )
     
     let dataSize = UInt32(MemoryLayout<AudioObjectID>.size)
-    var updatedValue = value
+    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: 1)
+    defer { boundPtr.deallocate() }
+    boundPtr.initialize(to: value)
     
     let dataResult = AudioObjectSetPropertyData(
         audioObjectID,
         &audioPropertyAddress,
         0, nil,
-        dataSize, &updatedValue
+        dataSize, boundPtr
     )
     if dataResult != kAudioHardwareNoError {
         print("Error occured calling AudioObjectSetPropertyData for \(audioObjectID) \(mSelector): \(dataResult)")
