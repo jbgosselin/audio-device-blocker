@@ -314,6 +314,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "audio-device-blocker/Preview\\ Content";
 				DEVELOPMENT_TEAM = G9J5SC6664;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocker";
@@ -345,6 +346,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "audio-device-blocker/Preview\\ Content";
 				DEVELOPMENT_TEAM = G9J5SC6664;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Audio Device Blocker";
