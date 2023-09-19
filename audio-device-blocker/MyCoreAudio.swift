@@ -8,6 +8,7 @@
 import CoreAudio
 
 func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, mScope: AudioObjectPropertyScope) -> T? {
+    // audioPropertyAddress describes what property we want to query
     var audioPropertyAddress = AudioObjectPropertyAddress(
         mSelector: mSelector,
         mScope: mScope,
@@ -30,6 +31,49 @@ func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectP
     }
     
     return boundPtr.pointee
+}
+
+func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, mScope: AudioObjectPropertyScope) -> Array<T>? {
+    // audioPropertyAddress describes what property we want to query
+    var audioPropertyAddress = AudioObjectPropertyAddress(
+        mSelector: mSelector,
+        mScope: mScope,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    
+    var dataSize: UInt32 = 0
+    
+    let dataSizeResult = AudioObjectGetPropertyDataSize(
+        audioObjectID,
+        &audioPropertyAddress,
+        0, nil,
+        &dataSize
+    )
+    if dataSizeResult != kAudioHardwareNoError {
+        print("Error occured calling AudioObjectGetPropertyDataSize for kAudioDevicePropertyStreams \(audioObjectID) \(mSelector) \(mScope): \(dataSizeResult)")
+        return nil
+    }
+    
+    let elementCount = Int(dataSize) / MemoryLayout<T>.size
+    if elementCount <= 0 {
+        return Array()
+    }
+    
+    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: elementCount)
+    defer { boundPtr.deallocate() }
+    
+    let dataResult = AudioObjectGetPropertyData(
+        audioObjectID,
+        &audioPropertyAddress,
+        0, nil,
+        &dataSize, boundPtr
+    )
+    if dataResult != kAudioHardwareNoError {
+        print("Error occured calling AudioObjectGetPropertyData for kAudioDevicePropertyStreams \(audioObjectID) \(mSelector) \(mScope): \(dataResult)")
+        return nil
+    }
+        
+    return Array(UnsafeBufferPointer(start: boundPtr, count: elementCount))
 }
 
 enum AudioStreamDirection: UInt32 {
@@ -69,10 +113,10 @@ struct AudioDevice: Hashable {
         }
         self.deviceUID = deviceUID as String
         
-        guard let audioStreams = listAudioStreams(audioObjectID: audioObjectID) else {
+        guard let audioStreamsIDs: Array<AudioStreamID> = fetchAudioArrayProperty(audioObjectID: audioObjectID, mSelector: kAudioDevicePropertyStreams, mScope: kAudioObjectPropertyScopeGlobal) else {
             return nil
         }
-        self.audioStreams = audioStreams
+        self.audioStreams = audioStreamsIDs.compactMap { AudioStream(audioStreamID: $0) }
     }
     
     func isDirection(direction: AudioStreamDirection) -> Bool {
@@ -80,118 +124,29 @@ struct AudioDevice: Hashable {
     }
 }
 
-func listAudioStreams(audioObjectID: AudioObjectID) -> Array<AudioStream>? {
-    // audioPropertyAddress describes what property we want to query
-    var audioPropertyAddress = AudioObjectPropertyAddress(
-        mSelector: kAudioDevicePropertyStreams,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
-    )
-    
-    var dataSize: UInt32 = 0
-    
-    let dataSizeResult = AudioObjectGetPropertyDataSize(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize
-    )
-    if dataSizeResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyDataSize for kAudioDevicePropertyStreams \(audioObjectID): \(dataSizeResult)")
-        return nil
-    }
-    
-    let streamCount = Int(dataSize) / MemoryLayout<AudioStreamID>.size
-    if streamCount <= 0 {
-        return Array()
-    }
-    
-    let boundPtr = UnsafeMutablePointer<AudioStreamID>.allocate(capacity: streamCount)
-    defer { boundPtr.deallocate() }
-    
-    let dataResult = AudioObjectGetPropertyData(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, boundPtr
-    )
-    if dataResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyData for kAudioDevicePropertyStreams \(audioObjectID): \(dataResult)")
-        return nil
-    }
-        
-    return UnsafeBufferPointer(start: boundPtr, count: streamCount).compactMap { AudioStream(audioStreamID: $0) }
-}
-
 func listAudioDevices(direction: AudioStreamDirection) -> Array<AudioDevice>? {
     return listAudioDevices()?.filter { $0.isDirection(direction: direction) }
 }
 
 func listAudioDevices() -> Array<AudioDevice>? {
-    // audioPropertyAddress describes what property we want to query
-    var audioPropertyAddress = AudioObjectPropertyAddress(
+    guard let audioDevicesIDs: Array<AudioDeviceID> = fetchAudioArrayProperty(
+        audioObjectID: AudioObjectID(kAudioObjectSystemObject),
         mSelector: kAudioHardwarePropertyDevices,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
-    )
-    
-    var dataSize: UInt32 = 0
-    
-    let dataSizeResult = AudioObjectGetPropertyDataSize(
-        AudioObjectID(kAudioObjectSystemObject),
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize
-    )
-    if dataSizeResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyDataSize for kAudioHardwarePropertyDevices: \(dataSizeResult)")
+        mScope: kAudioObjectPropertyScopeGlobal
+    ) else {
         return nil
     }
-    
-    let deviceCount = Int(dataSize) / MemoryLayout<AudioObjectID>.size
-    if deviceCount <= 0 {
-        return Array()
-    }
-    
-    let boundPtr = UnsafeMutablePointer<AudioObjectID>.allocate(capacity: deviceCount)
-    defer { boundPtr.deallocate() }
-    
-    let dataResult = AudioObjectGetPropertyData(
-        AudioObjectID(kAudioObjectSystemObject),
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, boundPtr
-    )
-    if dataResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyData for kAudioHardwarePropertyDevices: \(dataResult)")
-        return nil
-    }
-    
-    return UnsafeBufferPointer(start: boundPtr, count: deviceCount).compactMap { AudioDevice(audioObjectID: $0) }
+    return audioDevicesIDs.compactMap { AudioDevice(audioObjectID: $0) }
 }
 
 func fetchSpecificDevice(mSelector: AudioObjectPropertySelector) -> AudioDevice? {
-    // audioPropertyAddress describes what property we want to query
-    var audioPropertyAddress = AudioObjectPropertyAddress(
+    guard let audioDeviceID: AudioDeviceID = fetchAudioProperty(
+        audioObjectID: AudioObjectID(kAudioObjectSystemObject),
         mSelector: mSelector,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
-    )
-    
-    var dataSize = UInt32(MemoryLayout<AudioDeviceID>.size)
-    var audioDeviceID: AudioDeviceID = 0
-    
-    let dataResult = AudioObjectGetPropertyData(
-        AudioObjectID(kAudioObjectSystemObject),
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, &audioDeviceID
-    )
-    if dataResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyData for \(mSelector): \(dataResult)")
+        mScope: kAudioObjectPropertyScopeGlobal
+    ) else {
         return nil
     }
-    
     return AudioDevice(audioObjectID: audioDeviceID)
 }
 
