@@ -145,7 +145,7 @@ class AudioContext {
         let notificationContent = UNMutableNotificationContent()
         notificationContent.title = "Blocked device"
         notificationContent.subtitle = "\(device.name)"
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let req = UNNotificationRequest(identifier: UUID().uuidString, content: notificationContent, trigger: trigger)
         UNUserNotificationCenter.current().add(req)
     }
