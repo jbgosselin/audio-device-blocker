@@ -14,23 +14,24 @@ func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectP
         mScope: kAudioObjectPropertyScopeGlobal,
         mElement: kAudioObjectPropertyElementMain
     )
-
     var dataSize = UInt32(MemoryLayout<T>.size)
-    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: 1)
-    defer { boundPtr.deallocate() }
     
-    let dataResult = AudioObjectGetPropertyData(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, boundPtr
-    )
+    let (dataResult, value) = withUnsafeTemporaryAllocation(of: T.self, capacity: 1) { ptr in
+        let dataResult = AudioObjectGetPropertyData(
+            audioObjectID,
+            &audioPropertyAddress,
+            0, nil,
+            &dataSize, ptr.baseAddress!
+        )
+        return (dataResult, ptr[0])
+    }
+
     if dataResult != kAudioHardwareNoError {
         print("Error occured calling AudioObjectGetPropertyData for \(audioObjectID) \(mSelector): \(dataResult)")
         return nil
     }
     
-    return boundPtr.move()
+    return value
 }
 
 func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector) -> Array<T>? {
@@ -59,21 +60,22 @@ func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioOb
         return Array()
     }
     
-    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: elementCount)
-    defer { boundPtr.deallocate() }
+    let (dataResult, values) = withUnsafeTemporaryAllocation(of: T.self, capacity: elementCount) { ptr in
+        let dataResult = AudioObjectGetPropertyData(
+            audioObjectID,
+            &audioPropertyAddress,
+            0, nil,
+            &dataSize, ptr.baseAddress!
+        )
+        return (dataResult, Array(ptr))
+    }
     
-    let dataResult = AudioObjectGetPropertyData(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, boundPtr
-    )
     if dataResult != kAudioHardwareNoError {
         print("Error occured calling AudioObjectGetPropertyData for kAudioDevicePropertyStreams \(audioObjectID) \(mSelector): \(dataResult)")
         return nil
     }
         
-    return Array(UnsafeBufferPointer(start: boundPtr, count: elementCount))
+    return values
 }
 
 func setAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, value: T) -> Bool {
@@ -83,18 +85,17 @@ func setAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPro
         mScope: kAudioObjectPropertyScopeGlobal,
         mElement: kAudioObjectPropertyElementMain
     )
-    
     let dataSize = UInt32(MemoryLayout<AudioObjectID>.size)
-    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: 1)
-    defer { boundPtr.deallocate() }
-    boundPtr.initialize(to: value)
     
-    let dataResult = AudioObjectSetPropertyData(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        dataSize, boundPtr
-    )
+    let dataResult = withUnsafePointer(to: value) { ptr in
+        return AudioObjectSetPropertyData(
+            audioObjectID,
+            &audioPropertyAddress,
+            0, nil,
+            dataSize, ptr
+        )
+    }
+
     if dataResult != kAudioHardwareNoError {
         print("Error occured calling AudioObjectSetPropertyData for \(audioObjectID) \(mSelector): \(dataResult)")
         return false

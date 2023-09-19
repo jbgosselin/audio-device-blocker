@@ -42,19 +42,21 @@ final class AudioDeviceBlockerApp: App {
                 mElement: kAudioObjectPropertyElementMain
             )
             
-            let result = AudioObjectAddPropertyListener(
-                AudioObjectID(kAudioObjectSystemObject),
-                &audioPropertyAddress,
-                { inObjectID, inNumberAddresses, inAddresses, context in
-                    context?.load(as: AudioContext.self).coreAudioPropertyCallback(
-                        inObjectID: inObjectID,
-                        inNumberAddresses: inNumberAddresses,
-                        inAddresses: inAddresses
-                    )
-                    return 0
-                },
-                &self.audioContext
-            )
+            let result = withUnsafeMutablePointer(to: &self.audioContext) { ptr in
+                return AudioObjectAddPropertyListener(
+                    AudioObjectID(kAudioObjectSystemObject),
+                    &audioPropertyAddress,
+                    { inObjectID, inNumberAddresses, inAddresses, context in
+                        context?.load(as: AudioContext.self).coreAudioPropertyCallback(
+                            inObjectID: inObjectID,
+                            inNumberAddresses: inNumberAddresses,
+                            inAddresses: inAddresses
+                        )
+                        return 0
+                    },
+                    ptr
+                )
+            }
             
             if result != kAudioHardwareNoError {
                 print("Error registering CoreAudio callback for selector \(selector): \(result)")
