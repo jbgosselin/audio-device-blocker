@@ -7,39 +7,15 @@
 
 import CoreAudio
 
-func fetchAudioUInt32Property(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, mScope: AudioObjectPropertyScope) -> UInt32? {
+func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, mScope: AudioObjectPropertyScope) -> T? {
     var audioPropertyAddress = AudioObjectPropertyAddress(
         mSelector: mSelector,
         mScope: mScope,
         mElement: kAudioObjectPropertyElementMain
     )
 
-    var property: UInt32 = 0
-    var dataSize = UInt32(MemoryLayout<UInt32>.size)
-    
-    let dataResult = AudioObjectGetPropertyData(
-        audioObjectID,
-        &audioPropertyAddress,
-        0, nil,
-        &dataSize, &property
-    )
-    if dataResult != kAudioHardwareNoError {
-        print("Error occured calling AudioObjectGetPropertyData for \(audioObjectID) \(mSelector) \(mScope): \(dataResult)")
-        return nil
-    }
-    
-    return property
-}
-
-func fetchAudioStringProperty(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector, mScope: AudioObjectPropertyScope) -> String? {
-    var audioPropertyAddress = AudioObjectPropertyAddress(
-        mSelector: mSelector,
-        mScope: mScope,
-        mElement: kAudioObjectPropertyElementMain
-    )
-    
-    var dataSize = UInt32(MemoryLayout<CFString>.size)
-    let boundPtr = UnsafeMutablePointer<CFString>.allocate(capacity: 1)
+    var dataSize = UInt32(MemoryLayout<T>.size)
+    let boundPtr = UnsafeMutablePointer<T>.allocate(capacity: 1)
     defer { boundPtr.deallocate() }
     
     let dataResult = AudioObjectGetPropertyData(
@@ -53,7 +29,7 @@ func fetchAudioStringProperty(audioObjectID: AudioObjectID, mSelector: AudioObje
         return nil
     }
     
-    return boundPtr.pointee as String
+    return boundPtr.pointee
 }
 
 enum AudioStreamDirection: UInt32 {
@@ -68,7 +44,7 @@ struct AudioStream: Hashable {
     init?(audioStreamID: AudioStreamID) {
         self.audioStreamID = audioStreamID
                 
-        guard let direction = fetchAudioUInt32Property(audioObjectID: audioStreamID, mSelector: kAudioStreamPropertyDirection, mScope: kAudioObjectPropertyScopeGlobal).flatMap({ AudioStreamDirection(rawValue: $0) }) else {
+        guard let direction = fetchAudioProperty(audioObjectID: audioStreamID, mSelector: kAudioStreamPropertyDirection, mScope: kAudioObjectPropertyScopeGlobal).flatMap({ AudioStreamDirection(rawValue: $0) }) else {
             return nil
         }
         self.direction = direction
@@ -83,15 +59,15 @@ struct AudioDevice: Hashable {
     
     init?(audioObjectID: AudioObjectID) {
         self.id = audioObjectID
-        guard let name = fetchAudioStringProperty(audioObjectID: audioObjectID, mSelector: kAudioDevicePropertyDeviceNameCFString, mScope: kAudioObjectPropertyScopeGlobal) else {
+        guard let name: CFString = fetchAudioProperty(audioObjectID: audioObjectID, mSelector: kAudioDevicePropertyDeviceNameCFString, mScope: kAudioObjectPropertyScopeGlobal) else {
             return nil
         }
-        self.name = name
+        self.name = name as String
         
-        guard let deviceUID = fetchAudioStringProperty(audioObjectID: audioObjectID, mSelector: kAudioDevicePropertyDeviceUID, mScope: kAudioObjectPropertyScopeGlobal) else {
+        guard let deviceUID: CFString = fetchAudioProperty(audioObjectID: audioObjectID, mSelector: kAudioDevicePropertyDeviceUID, mScope: kAudioObjectPropertyScopeGlobal) else {
             return nil
         }
-        self.deviceUID = deviceUID
+        self.deviceUID = deviceUID as String
         
         guard let audioStreams = listAudioStreams(audioObjectID: audioObjectID) else {
             return nil
