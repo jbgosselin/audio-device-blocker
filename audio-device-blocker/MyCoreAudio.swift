@@ -39,20 +39,21 @@ func fetchAudioStringProperty(audioObjectID: AudioObjectID, mSelector: AudioObje
     )
     
     var dataSize = UInt32(MemoryLayout<CFString>.size)
-    var stringBuffer: CFString?
+    let boundPtr = UnsafeMutablePointer<CFString>.allocate(capacity: 1)
+    defer { boundPtr.deallocate() }
     
     let dataResult = AudioObjectGetPropertyData(
         audioObjectID,
         &audioPropertyAddress,
         0, nil,
-        &dataSize, &stringBuffer
+        &dataSize, boundPtr
     )
     if dataResult != kAudioHardwareNoError {
         print("Error occured calling AudioObjectGetPropertyData for \(audioObjectID) \(mSelector) \(mScope): \(dataResult)")
         return nil
     }
     
-    return stringBuffer as String?
+    return boundPtr.pointee as String
 }
 
 enum AudioStreamDirection: UInt32 {
