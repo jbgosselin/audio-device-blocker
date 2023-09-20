@@ -47,10 +47,10 @@ final class AudioDeviceBlockerApp: App {
                     AudioObjectID(kAudioObjectSystemObject),
                     &audioPropertyAddress,
                     { inObjectID, inNumberAddresses, inAddresses, context in
+                        let inAddressesBuffer = UnsafeBufferPointer(start: inAddresses, count: Int(inNumberAddresses))
                         context?.load(as: AudioContext.self).coreAudioPropertyCallback(
                             inObjectID: inObjectID,
-                            inNumberAddresses: inNumberAddresses,
-                            inAddresses: inAddresses
+                            inAddresses: inAddressesBuffer
                         )
                         return 0
                     },

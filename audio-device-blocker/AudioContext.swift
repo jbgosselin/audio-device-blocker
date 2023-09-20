@@ -17,9 +17,8 @@ class AudioContext {
     private var mainOutputDevice: AudioDevice?
     private var mainInputDevice: AudioDevice?
     
-    func coreAudioPropertyCallback(inObjectID: AudioObjectID, inNumberAddresses: UInt32, inAddresses: UnsafePointer<AudioObjectPropertyAddress>) {
-        for n in 0..<inNumberAddresses {
-            let property = inAddresses.advanced(by: Int(n)).pointee
+    func coreAudioPropertyCallback<A: Sequence<AudioObjectPropertyAddress>>(inObjectID: AudioObjectID, inAddresses: A) {
+        for property in inAddresses {
             switch property.mSelector {
             case kAudioHardwarePropertyDefaultInputDevice:
                 print("Main Audio Input Device changed")
@@ -144,7 +143,7 @@ class AudioContext {
     func notifyUser(_ device: AudioDevice) {
         let notificationContent = UNMutableNotificationContent()
         notificationContent.title = "Blocked device"
-        notificationContent.subtitle = "\(device.name)"
+        notificationContent.subtitle = device.name
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let req = UNNotificationRequest(identifier: UUID().uuidString, content: notificationContent, trigger: trigger)
         UNUserNotificationCenter.current().add(req)
