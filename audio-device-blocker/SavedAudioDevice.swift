@@ -46,8 +46,6 @@ extension [SavedAudioDevice] {
     }
     
     mutating func removeDeviceByID(_ id: String) {
-        if let idx = self.firstIndex(where: { $0.deviceUID == id }) {
-            self.remove(at: idx)
-        }
+        self.removeAll { $0.deviceUID == id }
     }
 }

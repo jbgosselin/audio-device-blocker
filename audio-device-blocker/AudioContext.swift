@@ -22,8 +22,8 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationDidFinishLaunching(_ notification: Notification) {
         self.registerAudioCallbacks()
         self.fetchAvailableDevices()
-        self.fetchMainOutputDevice()
-        self.fetchMainInputDevice()
+        self.fetchMainDevice(.output)
+        self.fetchMainDevice(.input)
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if let error = error {
@@ -75,10 +75,10 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
                 switch property.mSelector {
                 case kAudioHardwarePropertyDefaultInputDevice:
                     print("Main Audio Input Device changed")
-                    self.fetchMainInputDevice()
+                    self.fetchMainDevice(.input)
                 case kAudioHardwarePropertyDefaultOutputDevice:
                     print("Main Audio Output Device changed")
-                    self.fetchMainOutputDevice()
+                    self.fetchMainDevice(.output)
                 case kAudioHardwarePropertyDevices:
                     print("Audio Device Changed")
                     self.fetchAvailableDevices()
@@ -94,102 +94,86 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
         dump(self.availableDevices)
     }
     
-    func fetchMainOutputDevice() {
-        guard let device = fetchSpecificDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice) else {
-            print("Failed to retrieve default output device")
-            return
-        }
-        
-        print("New Default Output Device")
-        dump(device)
-        
-        // Check if device is blocklisted, otherwise nothing to do
-        if !self.outputBlocklist.hasDevice(device) {
+    private func setMainDevice(_ direction: AudioStreamDirection, _ device: AudioDevice) {
+        switch direction {
+        case .input:
+            self.mainInputDevice = device
+        case .output:
             self.mainOutputDevice = device
-            return
         }
-        
-        print("Reverting new output device because in blocklist")
-        
-        // If we had a device before and it is available
-        if let previousDevice = self.mainOutputDevice, availableDevices.withDirection(.output).contains(previousDevice) {
-            self.mainOutputDevice = device
-            if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice, audioObjectID: previousDevice.id) {
-                print("    successfully reverted previous output device")
-                self.notifyUser(device)
-                return
-            } else {
-                print("    error reverting to previous output device")
-            }
-        }
-        
-        self.mainOutputDevice = device
-        
-        // Otherwise, find the best fallback
-        
-        for dev in self.outputFallbacks {
-            guard let connectedDevice = availableDevices.withDirection(.output).first(where: { $0.deviceUID == dev.deviceUID }) else {
-                continue
-            }
-            if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice, audioObjectID: connectedDevice.id) {
-                print("    successfully reverted to fallback output device")
-                self.notifyUser(device)
-                return
-            } else {
-                print("    error reverting to fallback output device")
-            }
-        }
-        
-        print("Failed to revert output device")
     }
     
-    func fetchMainInputDevice() {
-        guard let device = fetchSpecificDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice) else {
-            print("Failed to retrieve default input device")
+    func fetchMainDevice(_ direction: AudioStreamDirection) {
+        guard let device = fetchSpecificDevice(mSelector: direction.kAudioHardwarePropertyDefaultDevice) else {
+            print("Failed to retrieve default \(direction) device")
             return
         }
         
-        print("New Default Input Device")
+        print("New Default \(direction) Device")
         dump(device)
         
-        // First check if device is blocklisted, otherwise nothing to do
-        if !self.inputBlocklist.hasDevice(device) {
-            self.mainInputDevice = device
+        let blocklist = switch direction {
+        case .input:
+            self.inputBlocklist
+        case .output:
+            self.outputBlocklist
+        }
+        
+        // Check if device is blocklisted, otherwise nothing to do
+        if !blocklist.hasDevice(device) {
+            self.setMainDevice(direction, device)
             return
         }
         
-        print("Reverting new input device because in blocklist")
+        print("Reverting new \(direction) device because in blocklist")
+        
+        let previousDevice = switch direction {
+        case .input:
+            self.mainInputDevice
+        case .output:
+            self.mainOutputDevice
+        }
+        
+        let availableDevices = self.availableDevices.withDirectionLazy(direction)
         
         // If we had a device before and it is available
-        if let previousDevice = self.mainInputDevice, availableDevices.withDirection(.input).contains(previousDevice) {
-            self.mainInputDevice = device
-            if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice, audioObjectID: previousDevice.id) {
-                print("    successfully reverted previous input device")
+        if let previousDevice = previousDevice, availableDevices.contains(previousDevice) {
+            self.setMainDevice(direction, device)
+            if setDefaultDevice(mSelector: direction.kAudioHardwarePropertyDefaultDevice, audioObjectID: previousDevice.id) {
+                print("    successfully reverted previous \(direction) device")
                 self.notifyUser(device)
                 return
             } else {
-                print("    error reverting to previous input device")
+                print("    error reverting to previous \(direction) device")
             }
         }
         
-        self.mainInputDevice = device
+        self.setMainDevice(direction, device)
         
         // Otherwise, find the best fallback
         
-        for dev in self.inputFallbacks {
-            guard let connectedDevice = availableDevices.withDirection(.input).first(where: { $0.deviceUID == dev.deviceUID }) else {
-                continue
-            }
-            if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice, audioObjectID: connectedDevice.id) {
-                print("    successfully reverted to fallback input device")
+        let fallbacks = switch direction {
+        case .input:
+            self.inputFallbacks
+        case .output:
+            self.outputFallbacks
+        }
+        
+        let availableFallbacks = fallbacks.lazy.compactMap { f in
+            availableDevices.first { a in a.deviceUID == f.deviceUID }
+        }
+        
+        for dev in availableFallbacks {
+            if setDefaultDevice(mSelector: direction.kAudioHardwarePropertyDefaultDevice, audioObjectID: dev.id) {
+                print("    successfully reverted to fallback \(direction) device \(dev.deviceUID)")
                 self.notifyUser(device)
                 return
             } else {
-                print("    error reverting to fallback input device")
+                print("    error reverting to fallback \(direction) device ")
             }
         }
         
-        print("Failed to revert input device")
+        print("Failed to revert \(direction) device")
     }
     
     func notifyUser(_ device: AudioDevice) {

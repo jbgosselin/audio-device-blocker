@@ -107,6 +107,26 @@ func setAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPro
 enum AudioStreamDirection: UInt32 {
     case output = 0
     case input = 1
+    
+    var kAudioHardwarePropertyDefaultDevice: AudioObjectPropertySelector {
+        switch self {
+        case .input:
+            kAudioHardwarePropertyDefaultInputDevice
+        case .output:
+            kAudioHardwarePropertyDefaultOutputDevice
+        }
+    }
+}
+
+extension AudioStreamDirection: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .input:
+            "INPUT"
+        case .output:
+            "OUTPUT"
+        }
+    }
 }
 
 struct AudioStream: Hashable {
@@ -194,6 +214,10 @@ func setDefaultDevice(mSelector: AudioObjectPropertySelector, audioObjectID: Aud
 
 extension [AudioDevice] {
     func withDirection(_ direction: AudioStreamDirection) -> [AudioDevice] {
-        self.filter { $0.isDirection(direction) }
+        Array(self.withDirectionLazy(direction))
+    }
+    
+    func withDirectionLazy(_ direction: AudioStreamDirection) -> LazyFilterSequence<[AudioDevice]> {
+        self.lazy.filter { $0.isDirection(direction) }
     }
 }
