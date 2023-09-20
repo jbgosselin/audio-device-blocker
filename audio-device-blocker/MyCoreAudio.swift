@@ -159,13 +159,9 @@ struct AudioDevice: Hashable {
         self.audioStreams = audioStreamsIDs.compactMap { AudioStream(audioStreamID: $0) }
     }
     
-    func isDirection(direction: AudioStreamDirection) -> Bool {
+    func isDirection(_ direction: AudioStreamDirection) -> Bool {
         self.audioStreams.contains { $0.direction == direction }
     }
-}
-
-func listAudioDevices(direction: AudioStreamDirection) -> [AudioDevice]? {
-    return listAudioDevices()?.filter { $0.isDirection(direction: direction) }
 }
 
 func listAudioDevices() -> [AudioDevice]? {
@@ -194,4 +190,10 @@ func setDefaultDevice(mSelector: AudioObjectPropertySelector, audioObjectID: Aud
         mSelector: mSelector,
         value: audioObjectID
     )
+}
+
+extension [AudioDevice] {
+    func withDirection(_ direction: AudioStreamDirection) -> [AudioDevice] {
+        self.filter { $0.isDirection(direction) }
+    }
 }

@@ -19,6 +19,8 @@ struct PreferencesWindowView: View {
     @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = SavedAudioDeviceList()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = SavedAudioDeviceList()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = SavedAudioDeviceList()
+    
+    @EnvironmentObject var audioContext: AudioContext
 
     var body: some View {
         TabView {
@@ -26,14 +28,18 @@ struct PreferencesWindowView: View {
                 direction: .output,
                 blocklist: $outputBlocklist,
                 fallbacks: $outputFallbacks
-            ).tabItem {
+            )
+            .environmentObject(self.audioContext)
+            .tabItem {
                 Label("Output blocklist", systemImage: "speaker")
             }
             PreferencesPanelView(
                 direction: .input,
                 blocklist: $inputBlocklist,
                 fallbacks: $inputFallbacks
-            ).tabItem{
+            )
+            .environmentObject(self.audioContext)
+            .tabItem{
                 Label("Input Blocklist", systemImage: "mic")
             }
         }.scenePadding()

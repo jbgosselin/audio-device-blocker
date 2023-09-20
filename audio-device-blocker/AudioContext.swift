@@ -9,27 +9,89 @@ import SwiftUI
 import CoreAudio
 import UserNotifications
 
-class AudioContext {
+final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
     @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = SavedAudioDeviceList()
     @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = SavedAudioDeviceList()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = SavedAudioDeviceList()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = SavedAudioDeviceList()
+    
     private var mainOutputDevice: AudioDevice?
     private var mainInputDevice: AudioDevice?
+    @Published var availableDevices: [AudioDevice] = []
     
-    func coreAudioPropertyCallback<A: Sequence<AudioObjectPropertyAddress>>(inObjectID: AudioObjectID, inAddresses: A) {
-        for property in inAddresses {
-            switch property.mSelector {
-            case kAudioHardwarePropertyDefaultInputDevice:
-                print("Main Audio Input Device changed")
-                self.fetchMainInputDevice()
-            case kAudioHardwarePropertyDefaultOutputDevice:
-                print("Main Audio Output Device changed")
-                self.fetchMainOutputDevice()
-            default:
-                print("Unknown selector \(property)")
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        self.registerAudioCallbacks()
+        self.fetchAvailableDevices()
+        self.fetchMainOutputDevice()
+        self.fetchMainInputDevice()
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            print("Notification authorized \(success)")
+        }
+    }
+    
+    private func registerAudioCallbacks() {
+        let selectors = [
+            kAudioHardwarePropertyDevices,
+            kAudioHardwarePropertyDefaultOutputDevice,
+            kAudioHardwarePropertyDefaultInputDevice,
+        ]
+        
+        for selector in selectors {
+            // audioPropertyAddress describes what property we want to observe changes and be called back
+            var audioPropertyAddress = AudioObjectPropertyAddress(
+                mSelector: selector,
+                mScope: kAudioObjectPropertyScopeGlobal,
+                mElement: kAudioObjectPropertyElementMain
+            )
+            let rawSelfPtr = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
+            let result = AudioObjectAddPropertyListener(
+                AudioObjectID(kAudioObjectSystemObject),
+                &audioPropertyAddress,
+                { inObjectID, inNumberAddresses, inAddresses, context in
+                    let inAddressesBuffer = UnsafeBufferPointer(start: inAddresses, count: Int(inNumberAddresses))
+                    unsafeBitCast(context, to: AudioContext.self).coreAudioPropertyCallback(
+                        inObjectID: inObjectID,
+                        inAddresses: inAddressesBuffer
+                    )
+                    return 0
+                },
+                rawSelfPtr
+            )
+            
+            if result != kAudioHardwareNoError {
+                print("Error registering CoreAudio callback for selector \(selector): \(result)")
             }
         }
+    }
+    
+    func coreAudioPropertyCallback<A: Sequence<AudioObjectPropertyAddress>>(inObjectID: AudioObjectID, inAddresses: A) {
+        DispatchQueue.main.sync {
+            for property in inAddresses {
+                switch property.mSelector {
+                case kAudioHardwarePropertyDefaultInputDevice:
+                    print("Main Audio Input Device changed")
+                    self.fetchMainInputDevice()
+                case kAudioHardwarePropertyDefaultOutputDevice:
+                    print("Main Audio Output Device changed")
+                    self.fetchMainOutputDevice()
+                case kAudioHardwarePropertyDevices:
+                    print("Audio Device Changed")
+                    self.fetchAvailableDevices()
+                default:
+                    print("Unknown selector \(property)")
+                }
+            }
+        }
+    }
+    
+    func fetchAvailableDevices() {
+        self.availableDevices = listAudioDevices() ?? self.availableDevices
+        dump(self.availableDevices)
     }
     
     func fetchMainOutputDevice() {
@@ -48,14 +110,9 @@ class AudioContext {
         }
         
         print("Reverting new output device because in blocklist")
-
-        guard let availableDevices = listAudioDevices(direction: .output) else {
-            print("Can't retrieve available output devices")
-            return
-        }
         
         // If we had a device before and it is available
-        if let previousDevice = self.mainOutputDevice, availableDevices.contains(where: { $0.id == previousDevice.id }) == true {
+        if let previousDevice = self.mainOutputDevice, availableDevices.withDirection(.output).contains(previousDevice) {
             self.mainOutputDevice = device
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice, audioObjectID: previousDevice.id) {
                 print("    successfully reverted previous output device")
@@ -71,7 +128,7 @@ class AudioContext {
         // Otherwise, find the best fallback
         
         for dev in self.outputFallbacks {
-            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.deviceUID }) else {
+            guard let connectedDevice = availableDevices.withDirection(.output).first(where: { $0.deviceUID == dev.deviceUID }) else {
                 continue
             }
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultOutputDevice, audioObjectID: connectedDevice.id) {
@@ -103,13 +160,8 @@ class AudioContext {
         
         print("Reverting new input device because in blocklist")
         
-        guard let availableDevices = listAudioDevices(direction: .input) else {
-            print("Can't retrieve available input devices")
-            return
-        }
-        
         // If we had a device before and it is available
-        if let previousDevice = self.mainInputDevice, availableDevices.contains(where: { $0.id == previousDevice.id }) == true {
+        if let previousDevice = self.mainInputDevice, availableDevices.withDirection(.input).contains(previousDevice) {
             self.mainInputDevice = device
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice, audioObjectID: previousDevice.id) {
                 print("    successfully reverted previous input device")
@@ -125,7 +177,7 @@ class AudioContext {
         // Otherwise, find the best fallback
         
         for dev in self.inputFallbacks {
-            guard let connectedDevice = availableDevices.first(where: { $0.deviceUID == dev.deviceUID }) else {
+            guard let connectedDevice = availableDevices.withDirection(.input).first(where: { $0.deviceUID == dev.deviceUID }) else {
                 continue
             }
             if setDefaultDevice(mSelector: kAudioHardwarePropertyDefaultInputDevice, audioObjectID: connectedDevice.id) {

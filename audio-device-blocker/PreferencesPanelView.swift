@@ -11,10 +11,10 @@ struct PreferencesPanelView: View {
     let direction: AudioStreamDirection
     @Binding var blocklist: SavedAudioDeviceList
     @Binding var fallbacks: SavedAudioDeviceList
-    @State private var availableDevices: [AudioDevice]
     @State private var selectedFallback: SavedAudioDevice?
     @State private var selectedBlocklist: SavedAudioDevice?
     @State private var selectedAvailable: AudioDevice?
+    @EnvironmentObject var audioContext: AudioContext
 
     init(
         direction: AudioStreamDirection,
@@ -24,7 +24,10 @@ struct PreferencesPanelView: View {
         self.direction = direction
         self._blocklist = blocklist
         self._fallbacks = fallbacks
-        self.availableDevices = listAudioDevices(direction: direction) ?? []
+    }
+    
+    var availableDevices: [AudioDevice] {
+        audioContext.availableDevices.withDirection(direction)
     }
     
     var body: some View {
@@ -33,39 +36,31 @@ struct PreferencesPanelView: View {
                 Text("Available devices")
                 Spacer()
                 Menu("Actions") {
-                    Button {
-                        self.availableDevices = listAudioDevices(direction: self.direction) ?? self.availableDevices
-                    } label: {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    Divider()
-                    Group {
-                        Button("Set as fallback") {
-                            guard let selected = self.selectedAvailable else {
-                                return
-                            }
-                            self.fallbacks.addDevice(selected)
-                        }
-                        .help("Add to fallbacks")
-                   
-                       Button("Block") {
-                           guard let selected = self.selectedAvailable else {
-                               return
-                           }
-                           self.blocklist.addDevice(selected)
-                       }
-                       .help("Add to blocklist")
-                    }
-                    .disabled({
+                    Button("Set as fallback") {
                         guard let selected = self.selectedAvailable else {
-                            return true
+                            return
                         }
-                        return self.blocklist.hasDevice(selected) || self.fallbacks.hasDevice(selected)
-                    }())
+                        self.fallbacks.addDevice(selected)
+                    }
+                    .help("Add to fallbacks")
+               
+                   Button("Block") {
+                       guard let selected = self.selectedAvailable else {
+                           return
+                       }
+                       self.blocklist.addDevice(selected)
+                   }
+                   .help("Add to blocklist")
                 }
                 .fixedSize()
+                .disabled({
+                    guard let selected = self.selectedAvailable else {
+                        return true
+                    }
+                    return self.blocklist.hasDevice(selected) || self.fallbacks.hasDevice(selected)
+                }())
             }
-            List(self.availableDevices, id: \.id, selection: self.$selectedAvailable) { dev in
+            List(availableDevices, id: \.id, selection: $selectedAvailable) { dev in
                 let stack = HStack {
                     Text(dev.name)
                     Spacer()
@@ -142,10 +137,13 @@ struct PreferencesPanelView_Previews: PreviewProvider {
             SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
             SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
         ]
+        let audioContext = AudioContext()
+        let _ = audioContext.fetchAvailableDevices()
         PreferencesPanelView(
             direction: .output,
             blocklist: $blocklist,
             fallbacks: $fallbacks
         )
+        .environmentObject(audioContext)
     }
 }
