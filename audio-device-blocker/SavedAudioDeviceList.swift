@@ -12,7 +12,7 @@ struct SavedAudioDevice: Codable, Hashable {
     let name: String
 }
 
-typealias SavedAudioDeviceList = Array<SavedAudioDevice>
+typealias SavedAudioDeviceList = [SavedAudioDevice]
 
 extension Array: RawRepresentable where Element: Codable {
     public init?(rawValue: String) {

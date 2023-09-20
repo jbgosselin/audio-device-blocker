@@ -34,7 +34,7 @@ func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectP
     return value
 }
 
-func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector) -> Array<T>? {
+func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector) -> [T]? {
     // audioPropertyAddress describes what property we want to query
     var audioPropertyAddress = AudioObjectPropertyAddress(
         mSelector: mSelector,
@@ -57,7 +57,7 @@ func fetchAudioArrayProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioOb
     
     let elementCount = Int(dataSize) / MemoryLayout<T>.size
     if elementCount <= 0 {
-        return Array()
+        return []
     }
     
     let (dataResult, values) = withUnsafeTemporaryAllocation(of: T.self, capacity: elementCount) { ptr in
@@ -130,7 +130,7 @@ struct AudioDevice: Hashable {
     let id: AudioObjectID
     let name: String
     let deviceUID: String
-    let audioStreams: Array<AudioStream>
+    let audioStreams: [AudioStream]
     
     init?(audioObjectID: AudioObjectID) {
         self.id = audioObjectID
@@ -150,7 +150,7 @@ struct AudioDevice: Hashable {
         }
         self.deviceUID = deviceUID as String
         
-        guard let audioStreamsIDs: Array<AudioStreamID> = fetchAudioArrayProperty(
+        guard let audioStreamsIDs: [AudioStreamID] = fetchAudioArrayProperty(
             audioObjectID: audioObjectID,
             mSelector: kAudioDevicePropertyStreams
         ) else {
@@ -164,12 +164,12 @@ struct AudioDevice: Hashable {
     }
 }
 
-func listAudioDevices(direction: AudioStreamDirection) -> Array<AudioDevice>? {
+func listAudioDevices(direction: AudioStreamDirection) -> [AudioDevice]? {
     return listAudioDevices()?.filter { $0.isDirection(direction: direction) }
 }
 
-func listAudioDevices() -> Array<AudioDevice>? {
-    guard let audioDevicesIDs: Array<AudioDeviceID> = fetchAudioArrayProperty(
+func listAudioDevices() -> [AudioDevice]? {
+    guard let audioDevicesIDs: [AudioDeviceID] = fetchAudioArrayProperty(
         audioObjectID: AudioObjectID(kAudioObjectSystemObject),
         mSelector: kAudioHardwarePropertyDevices
     ) else {

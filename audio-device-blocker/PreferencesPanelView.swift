@@ -11,7 +11,7 @@ struct PreferencesPanelView: View {
     let direction: AudioStreamDirection
     @Binding var blocklist: SavedAudioDeviceList
     @Binding var fallbacks: SavedAudioDeviceList
-    @State private var availableDevices: Array<AudioDevice>
+    @State private var availableDevices: [AudioDevice]
     @State private var selectedFallback: SavedAudioDevice?
     @State private var selectedBlocklist: SavedAudioDevice?
     @State private var selectedAvailable: AudioDevice?
@@ -24,7 +24,7 @@ struct PreferencesPanelView: View {
         self.direction = direction
         self._blocklist = blocklist
         self._fallbacks = fallbacks
-        self.availableDevices = listAudioDevices(direction: direction) ?? Array<AudioDevice>()
+        self.availableDevices = listAudioDevices(direction: direction) ?? []
     }
     
     var body: some View {
