@@ -15,10 +15,10 @@ enum StorageKey: String {
 }
 
 struct PreferencesWindowView: View {
-    @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = SavedAudioDeviceList()
-    @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = SavedAudioDeviceList()
-    @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = SavedAudioDeviceList()
-    @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = SavedAudioDeviceList()
+    @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = [SavedAudioDevice]()
+    @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = [SavedAudioDevice]()
+    @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
+    @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
     
     @EnvironmentObject var audioContext: AudioContext
 

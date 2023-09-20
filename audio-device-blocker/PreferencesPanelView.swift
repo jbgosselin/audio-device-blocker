@@ -9,8 +9,8 @@ import SwiftUI
 
 struct PreferencesPanelView: View {
     let direction: AudioStreamDirection
-    @Binding var blocklist: SavedAudioDeviceList
-    @Binding var fallbacks: SavedAudioDeviceList
+    @Binding var blocklist: [SavedAudioDevice]
+    @Binding var fallbacks: [SavedAudioDevice]
     @State private var selectedFallback: SavedAudioDevice?
     @State private var selectedBlocklist: SavedAudioDevice?
     @State private var selectedAvailable: AudioDevice?
@@ -18,8 +18,8 @@ struct PreferencesPanelView: View {
 
     init(
         direction: AudioStreamDirection,
-        blocklist: Binding<SavedAudioDeviceList>,
-        fallbacks: Binding<SavedAudioDeviceList>
+        blocklist: Binding<[SavedAudioDevice]>,
+        fallbacks: Binding<[SavedAudioDevice]>
     ) {
         self.direction = direction
         self._blocklist = blocklist

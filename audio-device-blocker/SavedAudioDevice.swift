@@ -1,5 +1,5 @@
 //
-//  SavedAudioDeviceList.swift
+//  SavedAudioDevice.swift
 //  Audio Device Blocker
 //
 //  Created by Jean-Baptiste Gosselin on 2023-09-18.
@@ -12,9 +12,7 @@ struct SavedAudioDevice: Codable, Hashable {
     let name: String
 }
 
-typealias SavedAudioDeviceList = [SavedAudioDevice]
-
-extension Array: RawRepresentable where Element: Codable {
+extension [SavedAudioDevice]: RawRepresentable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),
               let result = try? JSONDecoder().decode([Element].self, from: data)
@@ -35,7 +33,7 @@ extension Array: RawRepresentable where Element: Codable {
 }
 
 
-extension SavedAudioDeviceList {
+extension [SavedAudioDevice] {
     func hasDevice(_ audioDevice: AudioDevice) -> Bool {
         self.contains { $0.deviceUID == audioDevice.deviceUID }
     }
