@@ -16,7 +16,9 @@ struct MenuBarView: View {
                 NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: self)
             }
             Divider()
-            Link("About", destination: URL(string: "https://github.com/jbgosselin/audio-device-blocker")!)
+            Button("About") {
+                NSApplication.shared.orderFrontStandardAboutPanel(self)
+            }
             Button("Quit") {
                 NSApplication.shared.terminate(self)
             }
