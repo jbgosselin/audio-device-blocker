@@ -1,1 +1,4 @@
 *.xcodeproj/xcuserdata/
+/build/
+/dmg-content/
+/AudioDeviceBlocker.dmg

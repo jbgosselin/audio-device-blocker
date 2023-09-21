@@ -1,0 +1,3 @@
+[submodule "create-dmg"]
+	path = create-dmg
+	url = https://github.com/create-dmg/create-dmg.git
