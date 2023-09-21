@@ -27,3 +27,10 @@ More informations
 - Runs on MacOS 13.0+ (Ventura and ongoing)
 - The provided release runs on both Intel & ARM based Mac
 - I do not have a paid Apple Developer Membership so be ready to be warned that this software is from an "unidentified developer". See https://support.apple.com/guide/mac-help/mh40616/mac
+
+Contribute
+----------
+
+- Feel free to Star ⭐
+- Feel free to propose features and pull-requests
+- And if you really love the project, feel free to sponsor and I might consider buying the an Apple Developer Membership
