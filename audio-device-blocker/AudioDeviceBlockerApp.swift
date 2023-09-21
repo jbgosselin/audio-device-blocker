@@ -17,7 +17,7 @@ struct AudioDeviceBlockerApp: App {
         MenuBarExtra("Audio Device Blocker", systemImage: "speaker.slash.circle") {
             MenuBarView()
         }
-        Window("Preferences", id: "preferences") {
+        Settings {
             PreferencesWindowView().environmentObject(audioContext)
         }
     }

@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct MenuBarView: View {
-    @Environment(\.openWindow) private var openWindow
-
     var body: some View {
         VStack {
             Text("Audio Device Blocker").foregroundColor(.secondary)
             Divider()
-            Button("Preferences") {
-                openWindow(id: "preferences")
+            Button("Settings") {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: self)
             }
             Divider()
             Link("About", destination: URL(string: "https://github.com/jbgosselin/audio-device-blocker")!)
