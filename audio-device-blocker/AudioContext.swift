@@ -14,10 +14,11 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
     @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = [SavedAudioDevice]()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
+
+    @Published var availableDevices: [AudioDevice] = []
     
     private var mainOutputDevice: AudioDevice?
     private var mainInputDevice: AudioDevice?
-    @Published var availableDevices: [AudioDevice] = []
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         self.registerAudioCallbacks()
@@ -34,7 +35,32 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
         }
     }
     
+    @objc func coreAudioCallback(_ notif: Notification) {
+        guard let data = notif.object as? CoreAudioCallback else {
+            debugPrint("Fails to retrieve notification data in \(notif)")
+            return
+        }
+
+        for property in data.inAddresses {
+            switch property.mSelector {
+            case kAudioHardwarePropertyDefaultInputDevice:
+                print("Main Audio Input Device changed")
+                self.fetchMainDevice(.input)
+            case kAudioHardwarePropertyDefaultOutputDevice:
+                print("Main Audio Output Device changed")
+                self.fetchMainDevice(.output)
+            case kAudioHardwarePropertyDevices:
+                print("Audio Device Changed")
+                self.fetchAvailableDevices()
+            default:
+                print("Unknown selector \(property)")
+            }
+        }
+    }
+
     private func registerAudioCallbacks() {
+        NotificationCenter.default.addObserver(self, selector: #selector(coreAudioCallback), name: coreAudioPropertyListenerCallbackNotification, object: nil)
+
         let selectors = [
             kAudioHardwarePropertyDevices,
             kAudioHardwarePropertyDefaultOutputDevice,
@@ -42,50 +68,7 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
         ]
         
         for selector in selectors {
-            // audioPropertyAddress describes what property we want to observe changes and be called back
-            var audioPropertyAddress = AudioObjectPropertyAddress(
-                mSelector: selector,
-                mScope: kAudioObjectPropertyScopeGlobal,
-                mElement: kAudioObjectPropertyElementMain
-            )
-            let rawSelfPtr = unsafeBitCast(self, to: UnsafeMutableRawPointer.self)
-            let result = AudioObjectAddPropertyListener(
-                AudioObjectID(kAudioObjectSystemObject),
-                &audioPropertyAddress,
-                { inObjectID, inNumberAddresses, inAddresses, context in
-                    let inAddressesBuffer = UnsafeBufferPointer(start: inAddresses, count: Int(inNumberAddresses))
-                    unsafeBitCast(context, to: AudioContext.self).coreAudioPropertyCallback(
-                        inObjectID: inObjectID,
-                        inAddresses: inAddressesBuffer
-                    )
-                    return 0
-                },
-                rawSelfPtr
-            )
-            
-            if result != kAudioHardwareNoError {
-                print("Error registering CoreAudio callback for selector \(selector): \(result)")
-            }
-        }
-    }
-    
-    func coreAudioPropertyCallback<A: Sequence<AudioObjectPropertyAddress>>(inObjectID: AudioObjectID, inAddresses: A) {
-        DispatchQueue.main.sync {
-            for property in inAddresses {
-                switch property.mSelector {
-                case kAudioHardwarePropertyDefaultInputDevice:
-                    print("Main Audio Input Device changed")
-                    self.fetchMainDevice(.input)
-                case kAudioHardwarePropertyDefaultOutputDevice:
-                    print("Main Audio Output Device changed")
-                    self.fetchMainDevice(.output)
-                case kAudioHardwarePropertyDevices:
-                    print("Audio Device Changed")
-                    self.fetchAvailableDevices()
-                default:
-                    print("Unknown selector \(property)")
-                }
-            }
+            let _ = registerCoreAudioCallback(selector)
         }
     }
     

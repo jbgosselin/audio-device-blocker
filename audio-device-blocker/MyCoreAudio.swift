@@ -6,6 +6,52 @@
 //
 
 import CoreAudio
+import SwiftUI
+
+let coreAudioPropertyListenerCallbackNotification = Notification.Name("CoreAudioPropertyListenerCallbackNotification")
+
+struct CoreAudioCallback {
+    let inObjectID: AudioObjectID
+    let inAddresses: [AudioObjectPropertyAddress]
+}
+
+func baseCoreAudioCallback(
+    _ inObjectID: AudioObjectID,
+    _ inNumberAddresses: UInt32,
+    _ inAddresses: UnsafePointer<AudioObjectPropertyAddress>,
+    _ inClientData: UnsafeMutableRawPointer?
+) -> OSStatus {
+    let inAddresses = Array(UnsafeBufferPointer(start: inAddresses, count: Int(inNumberAddresses)))
+    NotificationCenter.default.post(
+        name: coreAudioPropertyListenerCallbackNotification,
+        object: CoreAudioCallback(
+            inObjectID: inObjectID,
+            inAddresses: inAddresses
+        )
+    )
+    return 0
+}
+
+func registerCoreAudioCallback(_ selector: AudioObjectPropertySelector) -> Bool {
+    var audioPropertyAddress = AudioObjectPropertyAddress(
+        mSelector: selector,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+
+    let result = AudioObjectAddPropertyListener(
+        AudioObjectID(kAudioObjectSystemObject),
+        &audioPropertyAddress,
+        baseCoreAudioCallback,
+        nil
+    )
+
+    if result != kAudioHardwareNoError {
+        print("Error registering CoreAudio callback for selector \(selector): \(result)")
+        return false
+    }
+    return true
+}
 
 func fetchAudioProperty<T>(audioObjectID: AudioObjectID, mSelector: AudioObjectPropertySelector) -> T? {
     // audioPropertyAddress describes what property we want to query
