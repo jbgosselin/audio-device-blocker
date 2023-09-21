@@ -18,6 +18,7 @@ struct MenuBarView: View {
                 openWindow(id: "preferences")
             }
             Divider()
+            Link("About", destination: URL(string: "https://github.com/jbgosselin/audio-device-blocker")!)
             Button("Quit") {
                 NSApplication.shared.terminate(self)
             }
