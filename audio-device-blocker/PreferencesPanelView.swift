@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct PreferencesPanelView: View {
+struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFallbackDevice {
     @Environment(\.managedObjectContext) var moc
 
-    @State private var selectedFallback: SavedAudioDevice?
+    @State private var selectedFallback: FallbackDevice?
     @State private var selectedBlocklist: BlockedDevice?
     @State private var selectedAvailable: AudioDevice?
 
@@ -19,7 +19,9 @@ struct PreferencesPanelView: View {
     @FetchRequest(sortDescriptors: [SortDescriptor(\.deviceUID)])
     private var allBlockedDevices: FetchedResults<BlockedDevice>
 
-    @Binding var fallbacks: [SavedAudioDevice]
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "idx", ascending: true)])
+    private var fallbacks: FetchedResults<FallbackDevice>
+
     @ObservedObject var audioContext: AudioContext
     
     var availableDevices: [AudioDevice] {
@@ -28,6 +30,32 @@ struct PreferencesPanelView: View {
 
     var blocklist: [BlockedDevice] {
         self.allBlockedDevices.filter { $0.direction == direction }
+    }
+
+    func appendFallbackDevice(_ device: AudioDevice) throws {
+        let fallbackDevice = FallbackDevice.init(context: moc)
+        fallbackDevice.deviceUID = device.deviceUID
+        fallbackDevice.name = device.name
+        fallbackDevice.idx = Int64(self.fallbacks.endIndex)
+        try moc.save()
+    }
+
+    func removeFallbackDevice(_ device: SavedFallbackDevice) throws {
+        moc.delete(device)
+        try moc.save()
+        for (idx, dev) in self.fallbacks.enumerated() {
+            dev.idx = Int64(idx)
+        }
+        try moc.save()
+    }
+
+    func moveFallbacks(fromOffsets: IndexSet, toOffset: Int) throws {
+        var tmp = Array(self.fallbacks)
+        tmp.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        for (idx, dev) in tmp.enumerated() {
+            dev.idx = Int64(idx)
+        }
+        try moc.save()
     }
 
     var body: some View {
@@ -40,7 +68,13 @@ struct PreferencesPanelView: View {
                         guard let selected = self.selectedAvailable else {
                             return
                         }
-                        self.fallbacks.addDevice(selected)
+                        do {
+                            try self.appendFallbackDevice(selected)
+                            self.selectedAvailable = nil
+                        }
+                        catch {
+                            print("Failed to save new FallbackDevice: \(error)")
+                        }
                     }
                     .help("Add to fallbacks")
                
@@ -92,8 +126,14 @@ struct PreferencesPanelView: View {
                     guard let selected = self.selectedBlocklist else {
                         return
                     }
-                    moc.delete(selected)
-                    self.selectedBlocklist = nil
+                    do {
+                        moc.delete(selected)
+                        try moc.save()
+                        self.selectedBlocklist = nil
+                    }
+                    catch {
+                        print("Failed to remove BlockedDevice: \(error)")
+                    }
                 }
                 .help("Remove from blocklist")
                 .disabled(self.selectedBlocklist == nil)
@@ -117,7 +157,12 @@ struct PreferencesPanelView: View {
                     guard let selected = self.selectedFallback else {
                         return
                     }
-                    self.fallbacks.removeDeviceByID(selected.deviceUID)
+                    do {
+                        try self.removeFallbackDevice(selected)
+                        self.selectedFallback = nil
+                    } catch {
+                        print("Failed to remove FallbackDevice: \(error)")
+                    }
                 }
                 .help("Remove from fallbacks")
                 .disabled(self.selectedFallback == nil)
@@ -125,14 +170,18 @@ struct PreferencesPanelView: View {
             List(selection: self.$selectedFallback) {
                 ForEach(self.fallbacks, id: \.deviceUID) { dev in
                     HStack {
-                        Text(dev.name)
+                        Text(dev.name!)
                         Spacer()
-                        Text("[\(dev.deviceUID)]").fontWeight(.thin)
+                        Text("[\(dev.deviceUID!) \(dev.idx)]").fontWeight(.thin)
                     }
                     .tag(dev)
                 }
                 .onMove(perform: { idx, offset in
-                    self.fallbacks.move(fromOffsets: idx, toOffset: offset)
+                    do {
+                        try self.moveFallbacks(fromOffsets: idx, toOffset: offset)
+                    } catch {
+                        print("Failed to reorder FallbackDevice: \(error)")
+                    }
                 })
             }
         }.scenePadding()
@@ -141,15 +190,14 @@ struct PreferencesPanelView: View {
 
 struct PreferencesPanelView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var fallbacks = [
-            SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
-            SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
-        ]
+//        @State var fallbacks = [
+//            SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
+//            SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
+//        ]
         let audioContext = AudioContext()
         let _ = audioContext.fetchAvailableDevices()
-        PreferencesPanelView(
+        PreferencesPanelView<OutputFallbackDevice>(
             direction: .output,
-            fallbacks: $fallbacks,
             audioContext: audioContext
         )
         .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)

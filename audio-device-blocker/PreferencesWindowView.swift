@@ -7,26 +7,15 @@
 
 import SwiftUI
 
-enum StorageKey: String {
-    case outputBlocklist = "outputBlocklist"
-    case inputBlocklist = "inputBlocklist"
-    case outputFallbacks = "outputFallbacks"
-    case inputFallbacks = "inputFallbacks"
-}
-
 struct PreferencesWindowView: View {
     @Environment(\.managedObjectContext) var moc
-
-    @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
-    @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
     
     @StateObject var audioContext: AudioContext = AudioContext.main
 
     var body: some View {
         TabView {
-            PreferencesPanelView(
+            PreferencesPanelView<OutputFallbackDevice>(
                 direction: .output,
-                fallbacks: $outputFallbacks,
                 audioContext: audioContext
             )
             .environment(\.managedObjectContext, moc)
@@ -34,9 +23,8 @@ struct PreferencesWindowView: View {
                 Label("Output blocklist", systemImage: "speaker")
             }
             
-            PreferencesPanelView(
+            PreferencesPanelView<InputFallbackDevice>(
                 direction: .input,
-                fallbacks: $inputFallbacks,
                 audioContext: audioContext
             )
             .environment(\.managedObjectContext, moc)

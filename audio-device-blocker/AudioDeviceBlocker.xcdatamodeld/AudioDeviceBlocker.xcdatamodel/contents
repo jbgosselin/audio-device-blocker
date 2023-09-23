@@ -10,4 +10,30 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="InputFallbackDevice" representedClassName="InputFallbackDevice" syncable="YES" codeGenerationType="class">
+        <attribute name="deviceUID" attributeType="String"/>
+        <attribute name="idx" attributeType="Integer 64" minValueString="0" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="deviceUID"/>
+            </uniquenessConstraint>
+            <uniquenessConstraint>
+                <constraint value="idx"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="OutputFallbackDevice" representedClassName="OutputFallbackDevice" syncable="YES" codeGenerationType="class">
+        <attribute name="deviceUID" attributeType="String"/>
+        <attribute name="idx" attributeType="Integer 64" minValueString="0" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="deviceUID"/>
+            </uniquenessConstraint>
+            <uniquenessConstraint>
+                <constraint value="idx"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
 </model>

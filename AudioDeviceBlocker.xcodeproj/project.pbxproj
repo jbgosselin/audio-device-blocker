@@ -10,6 +10,7 @@
 		8724D1D22ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8724D1D02ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld */; };
 		8724D1D42ABF1EF400D9DEFE /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8724D1D32ABF1EF400D9DEFE /* CoreData.framework */; };
 		8724D1D62ABF22B300D9DEFE /* BlockedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */; };
+		8724D1D82ABF316C00D9DEFE /* SavedFallbackDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8724D1D72ABF316C00D9DEFE /* SavedFallbackDevice.swift */; };
 		87409FFA2ABC9B7600B450CF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 87409FF92ABC9B7600B450CF /* Info.plist */; };
 		87409FFC2ABC9B8900B450CF /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 87409FFB2ABC9B8900B450CF /* Credits.rtf */; };
 		87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87570A042AB7804B0018B84D /* MyCoreAudio.swift */; };
@@ -22,7 +23,6 @@
 		87B2255B2AB7CCE3001F545D /* PreferencesWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */; };
 		87F285B82AB8810E004328B5 /* PreferencesPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */; };
 		87F285BA2AB88CE7004328B5 /* AudioContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F285B92AB88CE7004328B5 /* AudioContext.swift */; };
-		87F285BE2AB89E5C004328B5 /* SavedAudioDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F285BD2AB89E5C004328B5 /* SavedAudioDevice.swift */; };
 		87F285C22AB8CC00004328B5 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F285C12AB8CC00004328B5 /* UserNotifications.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +30,7 @@
 		8724D1D12ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AudioDeviceBlocker.xcdatamodel; sourceTree = "<group>"; };
 		8724D1D32ABF1EF400D9DEFE /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedDevice.swift; sourceTree = "<group>"; };
+		8724D1D72ABF316C00D9DEFE /* SavedFallbackDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedFallbackDevice.swift; sourceTree = "<group>"; };
 		87409FF92ABC9B7600B450CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87409FFB2ABC9B8900B450CF /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		87570A042AB7804B0018B84D /* MyCoreAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCoreAudio.swift; sourceTree = "<group>"; };
@@ -44,7 +45,6 @@
 		87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowView.swift; sourceTree = "<group>"; };
 		87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPanelView.swift; sourceTree = "<group>"; };
 		87F285B92AB88CE7004328B5 /* AudioContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioContext.swift; sourceTree = "<group>"; };
-		87F285BD2AB89E5C004328B5 /* SavedAudioDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedAudioDevice.swift; sourceTree = "<group>"; };
 		87F285C12AB8CC00004328B5 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -103,11 +103,11 @@
 				87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */,
 				87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */,
 				87F285B92AB88CE7004328B5 /* AudioContext.swift */,
-				87F285BD2AB89E5C004328B5 /* SavedAudioDevice.swift */,
 				87409FF92ABC9B7600B450CF /* Info.plist */,
 				87409FFB2ABC9B8900B450CF /* Credits.rtf */,
 				8724D1D02ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld */,
 				8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */,
+				8724D1D72ABF316C00D9DEFE /* SavedFallbackDevice.swift */,
 			);
 			path = "audio-device-blocker";
 			sourceTree = "<group>";
@@ -199,7 +199,7 @@
 				8724D1D22ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld in Sources */,
 				877E230E2AAD84E800D26125 /* AudioDeviceBlockerApp.swift in Sources */,
 				87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */,
-				87F285BE2AB89E5C004328B5 /* SavedAudioDevice.swift in Sources */,
+				8724D1D82ABF316C00D9DEFE /* SavedFallbackDevice.swift in Sources */,
 				87B2255B2AB7CCE3001F545D /* PreferencesWindowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

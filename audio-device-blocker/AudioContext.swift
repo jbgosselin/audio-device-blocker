@@ -10,9 +10,6 @@ import CoreAudio
 import UserNotifications
 
 class AudioContext: ObservableObject {
-    @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
-    @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
-
     @Published private(set) var availableDevices: [AudioDevice] = []
     
     private var mainOutputDevice: AudioDevice?
@@ -128,18 +125,23 @@ class AudioContext: ObservableObject {
         self.setMainDevice(direction, device)
         
         // Otherwise, find the best fallback
-        
-        let fallbacks = switch direction {
-        case .input:
-            self.inputFallbacks
+
+        let fallbackResult: [SavedFallbackDevice]? = switch direction {
         case .output:
-            self.outputFallbacks
+            try? moc.fetch(OutputFallbackDevice.fetchRequest())
+        case .input:
+            try? moc.fetch(InputFallbackDevice.fetchRequest())
         }
-        
-        let availableFallbacks = fallbacks.lazy.compactMap { f in
+
+        guard let fallbacks = fallbackResult?.sorted(by: {$0.idx < $1.idx }) else {
+            print("Failed to fetch fallbacks \(direction)")
+            return
+        }
+
+        let availableFallbacks = fallbacks.compactMap { f in
             availableDevices.first { a in a.deviceUID == f.deviceUID }
         }
-        
+
         for dev in availableFallbacks {
             if setDefaultDevice(mSelector: direction.kAudioHardwarePropertyDefaultDevice, audioObjectID: dev.id) {
                 print("    successfully reverted to fallback \(direction) device \(dev.deviceUID)")
