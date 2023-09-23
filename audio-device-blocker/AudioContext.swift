@@ -126,15 +126,22 @@ class AudioContext: ObservableObject {
         
         // Otherwise, find the best fallback
 
-        let fallbackResult: [SavedFallbackDevice]? = switch direction {
-        case .output:
-            try? moc.fetch(OutputFallbackDevice.fetchRequest())
-        case .input:
-            try? moc.fetch(InputFallbackDevice.fetchRequest())
-        }
-
-        guard let fallbacks = fallbackResult?.sorted(by: {$0.idx < $1.idx }) else {
-            print("Failed to fetch fallbacks \(direction)")
+        let fallbacks: [SavedFallbackDevice]
+        do {
+            fallbacks = switch direction {
+            case .output: try {
+                let req = OutputFallbackDevice.fetchRequest()
+                req.sortDescriptors = [NSSortDescriptor(key: "idx", ascending: true)]
+                return try moc.fetch(req)
+            }()
+            case .input: try {
+                let req = InputFallbackDevice.fetchRequest()
+                req.sortDescriptors = [NSSortDescriptor(key: "idx", ascending: true)]
+                return try moc.fetch(req)
+            }()
+            }
+        } catch {
+            print("Failed to fetch fallbacks \(direction): \(error)")
             return
         }
 
