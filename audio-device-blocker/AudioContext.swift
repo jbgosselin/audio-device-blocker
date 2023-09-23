@@ -9,30 +9,24 @@ import SwiftUI
 import CoreAudio
 import UserNotifications
 
-final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
+class AudioContext: ObservableObject {
     @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = [SavedAudioDevice]()
     @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = [SavedAudioDevice]()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
 
-    @Published var availableDevices: [AudioDevice] = []
+    @Published private(set) var availableDevices: [AudioDevice] = []
     
     private var mainOutputDevice: AudioDevice?
     private var mainInputDevice: AudioDevice?
     
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        self.registerAudioCallbacks()
-        self.fetchAvailableDevices()
-        self.fetchMainDevice(.output)
-        self.fetchMainDevice(.input)
-        
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-            if let error = error {
-                print(error.localizedDescription)
-                return
-            }
-            print("Notification authorized \(success)")
-        }
+    public static var main: AudioContext {
+        let ctx = AudioContext()
+        ctx.registerAudioCallbacks()
+        ctx.fetchAvailableDevices()
+        ctx.fetchMainDevice(.output)
+        ctx.fetchMainDevice(.input)
+        return ctx
     }
     
     @objc func coreAudioCallback(_ notif: Notification) {
@@ -41,19 +35,21 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
             return
         }
 
-        for property in data.inAddresses {
-            switch property.mSelector {
-            case kAudioHardwarePropertyDefaultInputDevice:
-                print("Main Audio Input Device changed")
-                self.fetchMainDevice(.input)
-            case kAudioHardwarePropertyDefaultOutputDevice:
-                print("Main Audio Output Device changed")
-                self.fetchMainDevice(.output)
-            case kAudioHardwarePropertyDevices:
-                print("Audio Device Changed")
-                self.fetchAvailableDevices()
-            default:
-                print("Unknown selector \(property)")
+        DispatchQueue.main.sync {
+            for property in data.inAddresses {
+                switch property.mSelector {
+                case kAudioHardwarePropertyDefaultInputDevice:
+                    print("Main Audio Input Device changed")
+                    self.fetchMainDevice(.input)
+                case kAudioHardwarePropertyDefaultOutputDevice:
+                    print("Main Audio Output Device changed")
+                    self.fetchMainDevice(.output)
+                case kAudioHardwarePropertyDevices:
+                    print("Audio Device Changed")
+                    self.fetchAvailableDevices()
+                default:
+                    print("Unknown selector \(property)")
+                }
             }
         }
     }
@@ -117,7 +113,7 @@ final class AudioContext: NSObject, NSApplicationDelegate, ObservableObject {
             self.mainOutputDevice
         }
         
-        let availableDevices = self.availableDevices.withDirectionLazy(direction)
+        let availableDevices = self.availableDevices.withDirection(direction)
         
         // If we had a device before and it is available
         if let previousDevice = previousDevice, availableDevices.contains(previousDevice) {

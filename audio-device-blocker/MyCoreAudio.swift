@@ -260,10 +260,6 @@ func setDefaultDevice(mSelector: AudioObjectPropertySelector, audioObjectID: Aud
 
 extension [AudioDevice] {
     func withDirection(_ direction: AudioStreamDirection) -> [AudioDevice] {
-        Array(self.withDirectionLazy(direction))
-    }
-    
-    func withDirectionLazy(_ direction: AudioStreamDirection) -> LazyFilterSequence<[AudioDevice]> {
-        self.lazy.filter { $0.isDirection(direction) }
+        self.filter { $0.isDirection(direction) }
     }
 }

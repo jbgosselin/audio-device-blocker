@@ -86,11 +86,11 @@
 		877E230C2AAD84E800D26125 /* audio-device-blocker */ = {
 			isa = PBXGroup;
 			children = (
-				877E230D2AAD84E800D26125 /* AudioDeviceBlockerApp.swift */,
 				877E23112AAD84E900D26125 /* Assets.xcassets */,
 				877E23162AAD84E900D26125 /* AudioDeviceBlocker.entitlements */,
 				877E23132AAD84E900D26125 /* Preview Content */,
 				87570A042AB7804B0018B84D /* MyCoreAudio.swift */,
+				877E230D2AAD84E800D26125 /* AudioDeviceBlockerApp.swift */,
 				87B225582AB7CA9E001F545D /* MenuBarView.swift */,
 				87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */,
 				87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */,

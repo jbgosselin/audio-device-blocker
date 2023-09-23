@@ -8,23 +8,14 @@
 import SwiftUI
 
 struct PreferencesPanelView: View {
-    let direction: AudioStreamDirection
-    @Binding var blocklist: [SavedAudioDevice]
-    @Binding var fallbacks: [SavedAudioDevice]
     @State private var selectedFallback: SavedAudioDevice?
     @State private var selectedBlocklist: SavedAudioDevice?
     @State private var selectedAvailable: AudioDevice?
-    @EnvironmentObject var audioContext: AudioContext
 
-    init(
-        direction: AudioStreamDirection,
-        blocklist: Binding<[SavedAudioDevice]>,
-        fallbacks: Binding<[SavedAudioDevice]>
-    ) {
-        self.direction = direction
-        self._blocklist = blocklist
-        self._fallbacks = fallbacks
-    }
+    let direction: AudioStreamDirection
+    @Binding var blocklist: [SavedAudioDevice]
+    @Binding var fallbacks: [SavedAudioDevice]
+    @ObservedObject var audioContext: AudioContext
     
     var availableDevices: [AudioDevice] {
         audioContext.availableDevices.withDirection(direction)
@@ -142,8 +133,8 @@ struct PreferencesPanelView_Previews: PreviewProvider {
         PreferencesPanelView(
             direction: .output,
             blocklist: $blocklist,
-            fallbacks: $fallbacks
+            fallbacks: $fallbacks,
+            audioContext: audioContext
         )
-        .environmentObject(audioContext)
     }
 }

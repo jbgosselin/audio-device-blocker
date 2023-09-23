@@ -11,14 +11,25 @@ import UserNotifications
 
 @main
 struct AudioDeviceBlockerApp: App {
-    @NSApplicationDelegateAdaptor(AudioContext.self) var audioContext
+    init() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            print("Notification authorized? \(success)")
+        }
+
+        // Create the singleton and start listening to audio events.
+        let _ = AudioContext.main
+    }
     
     var body: some Scene {
         MenuBarExtra("Audio Device Blocker", systemImage: "speaker.slash.circle") {
             MenuBarView()
         }
         Settings {
-            PreferencesWindowView().environmentObject(audioContext)
+            PreferencesWindowView()
         }
     }
 }
