@@ -11,6 +11,16 @@ import UserNotifications
 
 @main
 struct AudioDeviceBlockerApp: App {
+    static let persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "AudioDeviceBlocker")
+        container.loadPersistentStores { description, error in
+            if let error = error {
+                fatalError("Unable to load persistent stores: \(error)")
+            }
+        }
+        return container
+    }()
+
     init() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if let error = error {
@@ -30,6 +40,7 @@ struct AudioDeviceBlockerApp: App {
         }
         Settings {
             PreferencesWindowView()
+                .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
         }
     }
 }

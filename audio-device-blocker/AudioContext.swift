@@ -10,8 +10,6 @@ import CoreAudio
 import UserNotifications
 
 class AudioContext: ObservableObject {
-    @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = [SavedAudioDevice]()
-    @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = [SavedAudioDevice]()
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
 
@@ -91,13 +89,13 @@ class AudioContext: ObservableObject {
         print("New Default \(direction) Device")
         dump(device)
         
-        let blocklist = switch direction {
-        case .input:
-            self.inputBlocklist
-        case .output:
-            self.outputBlocklist
-        }
+        let moc = AudioDeviceBlockerApp.persistentContainer.viewContext
         
+        guard let blocklist = try? moc.fetch(BlockedDevice.fetchRequest()) else {
+            print("Failed to fetch blocklist")
+            return
+        }
+
         // Check if device is blocklisted, otherwise nothing to do
         if !blocklist.hasDevice(device) {
             self.setMainDevice(direction, device)

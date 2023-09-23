@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8724D1D22ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8724D1D02ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld */; };
+		8724D1D42ABF1EF400D9DEFE /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8724D1D32ABF1EF400D9DEFE /* CoreData.framework */; };
+		8724D1D62ABF22B300D9DEFE /* BlockedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */; };
 		87409FFA2ABC9B7600B450CF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 87409FF92ABC9B7600B450CF /* Info.plist */; };
 		87409FFC2ABC9B8900B450CF /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 87409FFB2ABC9B8900B450CF /* Credits.rtf */; };
 		87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87570A042AB7804B0018B84D /* MyCoreAudio.swift */; };
@@ -24,6 +27,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8724D1D12ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AudioDeviceBlocker.xcdatamodel; sourceTree = "<group>"; };
+		8724D1D32ABF1EF400D9DEFE /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedDevice.swift; sourceTree = "<group>"; };
 		87409FF92ABC9B7600B450CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87409FFB2ABC9B8900B450CF /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		87570A042AB7804B0018B84D /* MyCoreAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCoreAudio.swift; sourceTree = "<group>"; };
@@ -48,6 +54,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				87570A0A2AB7C92F0018B84D /* SwiftUI.framework in Frameworks */,
+				8724D1D42ABF1EF400D9DEFE /* CoreData.framework in Frameworks */,
 				87570A082AB7C9280018B84D /* CoreAudio.framework in Frameworks */,
 				87F285C22AB8CC00004328B5 /* UserNotifications.framework in Frameworks */,
 			);
@@ -59,6 +66,7 @@
 		87570A062AB7C9280018B84D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8724D1D32ABF1EF400D9DEFE /* CoreData.framework */,
 				87F285C12AB8CC00004328B5 /* UserNotifications.framework */,
 				87570A092AB7C92F0018B84D /* SwiftUI.framework */,
 				87570A072AB7C9280018B84D /* CoreAudio.framework */,
@@ -98,6 +106,8 @@
 				87F285BD2AB89E5C004328B5 /* SavedAudioDevice.swift */,
 				87409FF92ABC9B7600B450CF /* Info.plist */,
 				87409FFB2ABC9B8900B450CF /* Credits.rtf */,
+				8724D1D02ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld */,
+				8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */,
 			);
 			path = "audio-device-blocker";
 			sourceTree = "<group>";
@@ -183,8 +193,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				87B225592AB7CA9E001F545D /* MenuBarView.swift in Sources */,
+				8724D1D62ABF22B300D9DEFE /* BlockedDevice.swift in Sources */,
 				87F285B82AB8810E004328B5 /* PreferencesPanelView.swift in Sources */,
 				87F285BA2AB88CE7004328B5 /* AudioContext.swift in Sources */,
+				8724D1D22ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld in Sources */,
 				877E230E2AAD84E800D26125 /* AudioDeviceBlockerApp.swift in Sources */,
 				87570A052AB7804B0018B84D /* MyCoreAudio.swift in Sources */,
 				87F285BE2AB89E5C004328B5 /* SavedAudioDevice.swift in Sources */,
@@ -406,6 +418,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8724D1D02ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8724D1D12ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodel */,
+			);
+			currentVersion = 8724D1D12ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodel */;
+			path = AudioDeviceBlocker.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 877E23022AAD84E800D26125 /* Project object */;
 }

@@ -8,19 +8,28 @@
 import SwiftUI
 
 struct PreferencesPanelView: View {
+    @Environment(\.managedObjectContext) var moc
+
     @State private var selectedFallback: SavedAudioDevice?
-    @State private var selectedBlocklist: SavedAudioDevice?
+    @State private var selectedBlocklist: BlockedDevice?
     @State private var selectedAvailable: AudioDevice?
 
     let direction: AudioStreamDirection
-    @Binding var blocklist: [SavedAudioDevice]
+
+    @FetchRequest(sortDescriptors: [SortDescriptor(\.deviceUID)])
+    private var allBlockedDevices: FetchedResults<BlockedDevice>
+
     @Binding var fallbacks: [SavedAudioDevice]
     @ObservedObject var audioContext: AudioContext
     
     var availableDevices: [AudioDevice] {
         audioContext.availableDevices.withDirection(direction)
     }
-    
+
+    var blocklist: [BlockedDevice] {
+        self.allBlockedDevices.filter { $0.direction == direction }
+    }
+
     var body: some View {
         VStack {
             HStack {
@@ -39,7 +48,17 @@ struct PreferencesPanelView: View {
                        guard let selected = self.selectedAvailable else {
                            return
                        }
-                       self.blocklist.addDevice(selected)
+                       do {
+                           let blockedDevice = BlockedDevice.init(context: moc)
+                           blockedDevice.direction = direction
+                           blockedDevice.deviceUID = selected.deviceUID
+                           blockedDevice.name = selected.name
+                           try moc.save()
+                       }
+                       catch {
+                           print("Failed to save new BlockedDevice: \(error)")
+                       }
+                       self.selectedAvailable = nil
                    }
                    .help("Add to blocklist")
                 }
@@ -73,16 +92,17 @@ struct PreferencesPanelView: View {
                     guard let selected = self.selectedBlocklist else {
                         return
                     }
-                    self.blocklist.removeDeviceByID(selected.deviceUID)
+                    moc.delete(selected)
+                    self.selectedBlocklist = nil
                 }
                 .help("Remove from blocklist")
                 .disabled(self.selectedBlocklist == nil)
             }
             List(self.blocklist, id: \.deviceUID, selection: self.$selectedBlocklist) { dev in
                 HStack {
-                    Text(dev.name)
+                    Text(dev.name!)
                     Spacer()
-                    Text("[\(dev.deviceUID)]").fontWeight(.thin)
+                    Text("[\(dev.deviceUID!)]").fontWeight(.thin)
                 }
                 .tag(dev)
             }
@@ -121,9 +141,6 @@ struct PreferencesPanelView: View {
 
 struct PreferencesPanelView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var blocklist = [
-            SavedAudioDevice(deviceUID: "test-id-blocklisted", name: "Test Device")
-        ]
         @State var fallbacks = [
             SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
             SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
@@ -132,9 +149,9 @@ struct PreferencesPanelView_Previews: PreviewProvider {
         let _ = audioContext.fetchAvailableDevices()
         PreferencesPanelView(
             direction: .output,
-            blocklist: $blocklist,
             fallbacks: $fallbacks,
             audioContext: audioContext
         )
+        .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
     }
 }

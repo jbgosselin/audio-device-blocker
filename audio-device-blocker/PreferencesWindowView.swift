@@ -15,8 +15,8 @@ enum StorageKey: String {
 }
 
 struct PreferencesWindowView: View {
-    @AppStorage(StorageKey.outputBlocklist.rawValue) private var outputBlocklist = [SavedAudioDevice]()
-    @AppStorage(StorageKey.inputBlocklist.rawValue) private var inputBlocklist = [SavedAudioDevice]()
+    @Environment(\.managedObjectContext) var moc
+
     @AppStorage(StorageKey.outputFallbacks.rawValue) private var outputFallbacks = [SavedAudioDevice]()
     @AppStorage(StorageKey.inputFallbacks.rawValue) private var inputFallbacks = [SavedAudioDevice]()
     
@@ -26,19 +26,20 @@ struct PreferencesWindowView: View {
         TabView {
             PreferencesPanelView(
                 direction: .output,
-                blocklist: $outputBlocklist,
                 fallbacks: $outputFallbacks,
                 audioContext: audioContext
             )
+            .environment(\.managedObjectContext, moc)
             .tabItem {
                 Label("Output blocklist", systemImage: "speaker")
             }
+            
             PreferencesPanelView(
                 direction: .input,
-                blocklist: $inputBlocklist,
                 fallbacks: $inputFallbacks,
                 audioContext: audioContext
             )
+            .environment(\.managedObjectContext, moc)
             .tabItem{
                 Label("Input Blocklist", systemImage: "mic")
             }
