@@ -140,9 +140,9 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
             }
             List(self.blocklist, id: \.deviceUID, selection: self.$selectedBlocklist) { dev in
                 HStack {
-                    Text(dev.name!)
+                    Text(dev.name ?? "nil")
                     Spacer()
-                    Text("[\(dev.deviceUID!)]").fontWeight(.thin)
+                    Text("[\(dev.deviceUID ?? "nil")]").fontWeight(.thin)
                 }
                 .tag(dev)
             }
@@ -170,9 +170,12 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
             List(selection: self.$selectedFallback) {
                 ForEach(self.fallbacks, id: \.deviceUID) { dev in
                     HStack {
-                        Text(dev.name!)
+                        Text(dev.name ?? "nil")
                         Spacer()
-                        Text("[\(dev.deviceUID!) \(dev.idx)]").fontWeight(.thin)
+                        Text("[\(dev.deviceUID ?? "nil")]").fontWeight(.thin)
+                        #if DEBUG
+                        Text("{\(dev.idx)}").fontWeight(.ultraLight)
+                        #endif
                     }
                     .tag(dev)
                 }
