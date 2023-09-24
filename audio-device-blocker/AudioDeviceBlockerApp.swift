@@ -11,6 +11,8 @@ import UserNotifications
 
 @main
 struct AudioDeviceBlockerApp: App {
+    @StateObject private var audioContext = AudioContext.prepopulate()
+
     static let persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "AudioDeviceBlocker")
         container.loadPersistentStores { description, error in
@@ -29,9 +31,6 @@ struct AudioDeviceBlockerApp: App {
             }
             print("Notification authorized? \(success)")
         }
-
-        // Create the singleton and start listening to audio events.
-        let _ = AudioContext.main
     }
     
     var body: some Scene {
@@ -39,7 +38,7 @@ struct AudioDeviceBlockerApp: App {
             MenuBarView()
         }
         Settings {
-            PreferencesWindowView()
+            PreferencesWindowView(audioContext: audioContext)
                 .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
         }
     }

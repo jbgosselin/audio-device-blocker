@@ -10,7 +10,7 @@ import SwiftUI
 struct PreferencesWindowView: View {
     @Environment(\.managedObjectContext) var moc
     
-    @StateObject var audioContext: AudioContext = AudioContext.main
+    @ObservedObject var audioContext: AudioContext
 
     var body: some View {
         TabView {
@@ -38,6 +38,9 @@ struct PreferencesWindowView: View {
 
 struct PreferencesWindowView_Previews: PreviewProvider {
     static var previews: some View {
-        PreferencesWindowView()
+        let audioContext = AudioContext()
+        let _ = audioContext.fetchAvailableDevices()
+        PreferencesWindowView(audioContext: audioContext)
+            .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
     }
 }

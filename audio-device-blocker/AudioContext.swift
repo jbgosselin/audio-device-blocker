@@ -14,8 +14,8 @@ class AudioContext: ObservableObject {
     
     private var mainOutputDevice: AudioDevice?
     private var mainInputDevice: AudioDevice?
-    
-    public static var main: AudioContext {
+
+    public static func prepopulate() -> AudioContext {
         let ctx = AudioContext()
         ctx.registerAudioCallbacks()
         ctx.fetchAvailableDevices()
@@ -23,7 +23,7 @@ class AudioContext: ObservableObject {
         ctx.fetchMainDevice(.input)
         return ctx
     }
-    
+
     @objc func coreAudioCallback(_ notif: Notification) {
         guard let data = notif.object as? CoreAudioCallback else {
             debugPrint("Fails to retrieve notification data in \(notif)")
