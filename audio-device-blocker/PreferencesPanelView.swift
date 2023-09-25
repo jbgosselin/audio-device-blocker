@@ -52,7 +52,9 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
     func moveFallbacks(fromOffsets: IndexSet, toOffset: Int) throws {
         var tmp = Array(self.fallbacks)
         tmp.move(fromOffsets: fromOffsets, toOffset: toOffset)
-        for (idx, dev) in tmp.enumerated() {
+        for (idx, dev) in tmp.enumerated().filter({ (idx, dev) in
+            dev.idx != idx
+        }) {
             dev.idx = Int64(idx)
         }
         try moc.save()
