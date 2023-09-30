@@ -194,18 +194,16 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
     }
 }
 
-struct PreferencesPanelView_Previews: PreviewProvider {
-    static var previews: some View {
-//        @State var fallbacks = [
-//            SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
-//            SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
-//        ]
-        let audioContext = AudioContext()
-        let _ = audioContext.fetchAvailableDevices()
-        PreferencesPanelView<OutputFallbackDevice>(
-            direction: .output,
-            audioContext: audioContext
-        )
-        .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
-    }
+#Preview {
+//    @State var fallbacks = [
+//        SavedAudioDevice(deviceUID: "test-id-fallback", name: "Test Device"),
+//        SavedAudioDevice(deviceUID: "BuiltInSpeakerDevice", name: "Test Built In")
+//    ]
+    let audioContext = AudioContext()
+    let _ = audioContext.fetchAvailableDevices()
+    return PreferencesPanelView<OutputFallbackDevice>(
+        direction: .output,
+        audioContext: audioContext
+    )
+    .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
 }

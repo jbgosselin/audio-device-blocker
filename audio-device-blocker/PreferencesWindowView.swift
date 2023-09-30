@@ -48,11 +48,9 @@ struct PreferencesWindowView: View {
     }
 }
 
-struct PreferencesWindowView_Previews: PreviewProvider {
-    static var previews: some View {
-        let audioContext = AudioContext()
-        let _ = audioContext.fetchAvailableDevices()
-        PreferencesWindowView(audioContext: audioContext)
-            .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
-    }
+#Preview {
+    let audioContext = AudioContext()
+    let _ = audioContext.fetchAvailableDevices()
+    return PreferencesWindowView(audioContext: audioContext)
+        .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
 }

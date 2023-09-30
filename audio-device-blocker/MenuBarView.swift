@@ -26,8 +26,6 @@ struct MenuBarView: View {
     }
 }
 
-struct MenuBarView_Previews: PreviewProvider {
-    static var previews: some View {
-        MenuBarView()
-    }
+#Preview {
+    MenuBarView()
 }
