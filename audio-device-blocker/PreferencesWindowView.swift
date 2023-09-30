@@ -12,8 +12,18 @@ struct PreferencesWindowView: View {
     
     @ObservedObject var audioContext: AudioContext
 
+    private enum Tabs: Hashable {
+        case general, outputs, inputs
+    }
+
     var body: some View {
         TabView {
+            GeneralPreferencesPanelView()
+                .tabItem {
+                    Label("General", systemImage: "gear")
+                }
+                .tag(Tabs.general)
+
             PreferencesPanelView<OutputFallbackDevice>(
                 direction: .output,
                 audioContext: audioContext
@@ -22,7 +32,8 @@ struct PreferencesWindowView: View {
             .tabItem {
                 Label("Output blocklist", systemImage: "speaker")
             }
-            
+            .tag(Tabs.outputs)
+
             PreferencesPanelView<InputFallbackDevice>(
                 direction: .input,
                 audioContext: audioContext
@@ -31,8 +42,9 @@ struct PreferencesWindowView: View {
             .tabItem{
                 Label("Input Blocklist", systemImage: "mic")
             }
-        }.scenePadding()
-
+            .tag(Tabs.inputs)
+        }
+        .scenePadding()
     }
 }
 

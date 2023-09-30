@@ -189,7 +189,8 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
                     }
                 })
             }
-        }.scenePadding()
+        }
+        .frame(minWidth: 500, minHeight: 500)
     }
 }
 

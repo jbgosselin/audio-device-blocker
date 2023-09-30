@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreAudio
 import UserNotifications
+import ServiceManagement
 
 @main
 struct AudioDeviceBlockerApp: App {
@@ -23,7 +24,7 @@ struct AudioDeviceBlockerApp: App {
         return container
     }()
 
-    init() {
+    public static func requestNotification() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if let error = error {
                 print(error.localizedDescription)
@@ -31,6 +32,30 @@ struct AudioDeviceBlockerApp: App {
             }
             print("Notification authorized? \(success)")
         }
+    }
+
+    public static func registerStartAtLogin() {
+        #if DEBUG
+        print("DEBUG: Would registerStartAtLogin")
+        #else
+        do {
+            try SMAppService.mainApp.register()
+        } catch {
+            debugPrint("Cannot register to run at login \(error)")
+        }
+        #endif
+    }
+
+    public static func unregisterStartAtLogin() {
+        #if DEBUG
+            print("DEBUG: Would unregisterStartAtLogin")
+        #else
+        do {
+            try SMAppService.mainApp.unregister()
+        } catch {
+            debugPrint("Cannot un-register to run at login \(error)")
+        }
+        #endif
     }
     
     var body: some Scene {

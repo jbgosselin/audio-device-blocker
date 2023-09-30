@@ -10,6 +10,7 @@ import CoreAudio
 import UserNotifications
 
 class AudioContext: ObservableObject {
+    @AppStorage("notifyOnDeviceBlocked") var notifyOnDeviceBlocked = true
     @Published private(set) var availableDevices: [AudioDevice] = []
     
     private var mainOutputDevice: AudioDevice?
@@ -21,6 +22,10 @@ class AudioContext: ObservableObject {
         ctx.fetchAvailableDevices()
         ctx.fetchMainDevice(.output)
         ctx.fetchMainDevice(.input)
+
+        if ctx.notifyOnDeviceBlocked {
+            AudioDeviceBlockerApp.requestNotification()
+        }
         return ctx
     }
 
@@ -163,6 +168,9 @@ class AudioContext: ObservableObject {
     }
     
     func notifyUser(_ device: AudioDevice) {
+        if !notifyOnDeviceBlocked {
+            return
+        }
         let notificationContent = UNMutableNotificationContent()
         notificationContent.title = "Blocked device"
         notificationContent.subtitle = device.name
