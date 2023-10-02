@@ -7,7 +7,7 @@ Why?
 Are you tired of your mac automatically switching to the microphone of your bluetooth headset?
 
 I was, so I decided to create a small tray App to ban my bluetooth headset microphone from connecting automatically.
-Additionally, this works with any kind of input or output audio device.
+Additionally, this works with any input or output audio device.
 
 How does it work?
 -----------------
@@ -18,7 +18,7 @@ It runs in the notification tray and monitors when:
 
 When a blocklisted device is plugged-in and the system automatically switch to it:
 - Reverts back to the previously used device
-- Fallbacks to a list of devices in with a defined order of preference
+- Fallbacks to a list of devices with a defined order of preference
 - Notifies you when a device has been blocked
 
 More informations
@@ -33,4 +33,4 @@ Contribute
 
 - Feel free to Star ⭐
 - Feel free to propose features and pull-requests
-- And if you really love the project, feel free to sponsor and I might consider buying the an Apple Developer Membership
+- And if you really love the project, feel free to sponsor and I might consider buying the Apple Developer Membership
