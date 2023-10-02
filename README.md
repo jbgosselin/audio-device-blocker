@@ -32,5 +32,6 @@ Contribute
 ----------
 
 - Feel free to Star ⭐
+- Share it with your friends
 - Feel free to propose features and pull-requests
 - And if you really love the project, feel free to sponsor and I might consider buying the Apple Developer Membership
