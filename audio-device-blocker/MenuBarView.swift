@@ -12,8 +12,12 @@ struct MenuBarView: View {
         VStack {
             Text("Audio Device Blocker").foregroundColor(.secondary)
             Divider()
-            Button("Settings") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: self)
+            if #available(macOS 14.0, *) {
+                SettingsLink()
+            } else {
+                Button("Settings...") {
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: self)
+                }
             }
             Divider()
             Button("About") {
