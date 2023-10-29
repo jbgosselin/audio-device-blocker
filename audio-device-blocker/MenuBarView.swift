@@ -26,7 +26,7 @@ struct MenuBarView: View {
             Button("Quit") {
                 NSApplication.shared.terminate(self)
             }
-        }.scenePadding()
+        }
     }
 }
 
