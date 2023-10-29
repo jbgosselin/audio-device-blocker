@@ -1,6 +1,8 @@
 Audio Device Blocker
 ====================
 
+![AppIcon](/audio-device-blocker/Assets.xcassets/AppIcon.appiconset/AppIcon-256.png)
+
 Why?
 ----
 
@@ -35,3 +37,8 @@ Contribute
 - Share it with your friends
 - Feel free to propose features and pull-requests
 - And if you really love the project, feel free to sponsor and I might consider buying the Apple Developer Membership
+
+Special Thanks
+--------------
+
+- [@Aisijin](https://github.com/Aisijin) for the App icons
