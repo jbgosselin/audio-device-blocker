@@ -59,7 +59,7 @@ struct AudioDeviceBlockerApp: App {
     }
     
     var body: some Scene {
-        MenuBarExtra("Audio Device Blocker", systemImage: "speaker.slash.circle") {
+        MenuBarExtra("Audio Device Blocker", image: "MenuBarIcon") {
             MenuBarView()
         }
         Settings {
