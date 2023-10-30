@@ -26,7 +26,7 @@ When a blocklisted device is plugged-in and the system automatically switch to i
 More informations
 -----------------
 
-- Runs on MacOS 13.0+ (Ventura and ongoing)
+- Runs on MacOS 11.0+ (Big Sur and ongoing)
 - The provided release runs on both Intel & ARM based Mac
 - I do not have a paid Apple Developer Membership so be ready to be warned that this software is from an "unidentified developer". See https://support.apple.com/guide/mac-help/mh40616/mac
 
