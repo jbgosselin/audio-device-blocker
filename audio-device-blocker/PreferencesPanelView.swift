@@ -16,7 +16,7 @@ struct PreferencesPanelView<FallbackDevice>: View where FallbackDevice: SavedFal
 
     let direction: AudioStreamDirection
 
-    @FetchRequest(sortDescriptors: [SortDescriptor(\.deviceUID)])
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "deviceUID", ascending: true)])
     private var allBlockedDevices: FetchedResults<BlockedDevice>
 
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "idx", ascending: true)])

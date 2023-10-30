@@ -11,9 +11,17 @@ import UserNotifications
 import ServiceManagement
 
 @main
-struct AudioDeviceBlockerApp: App {
-    @StateObject private var audioContext = AudioContext.prepopulate()
+struct AudioDeviceBlockerAppMain {
+    static func main() {
+        if #available(macOS 13, *) {
+            return AudioDeviceBlockerApp13.main()
+        } else {
+            return AudioDeviceBlockerAppOld.main()
+        }
+    }
+}
 
+class AudioDeviceBlockerApp {
     static let persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "AudioDeviceBlocker")
         container.loadPersistentStores { description, error in
@@ -38,10 +46,20 @@ struct AudioDeviceBlockerApp: App {
         #if DEBUG
         print("DEBUG: Would registerStartAtLogin")
         #else
-        do {
-            try SMAppService.mainApp.register()
-        } catch {
-            debugPrint("Cannot register to run at login \(error)")
+        if #available(macOS 13.0, *) {
+            do {
+                try SMAppService.mainApp.register()
+            } catch {
+                debugPrint("Cannot register to run at login \(error)")
+            }
+        } else {
+            if let bundleID = Bundle.main.bundleIdentifier {
+                if !SMLoginItemSetEnabled(bundleID as CFString, true) {
+                    print("Cannot register to run at login")
+                }
+            } else {
+                print("Cannot retrieve bundleIdentifier")
+            }
         }
         #endif
     }
@@ -50,14 +68,29 @@ struct AudioDeviceBlockerApp: App {
         #if DEBUG
             print("DEBUG: Would unregisterStartAtLogin")
         #else
-        do {
-            try SMAppService.mainApp.unregister()
-        } catch {
-            debugPrint("Cannot un-register to run at login \(error)")
+        if #available(macOS 13.0, *) {
+            do {
+                try SMAppService.mainApp.unregister()
+            } catch {
+                debugPrint("Cannot un-register to run at login \(error)")
+            }
+        } else {
+            if let bundleID = Bundle.main.bundleIdentifier {
+                if !SMLoginItemSetEnabled(bundleID as CFString, false) {
+                    print("Cannot un-register to run at login")
+                }
+            } else {
+                print("Cannot retrieve bundleIdentifier")
+            }
         }
         #endif
     }
-    
+}
+
+@available(macOS 13, *)
+final class AudioDeviceBlockerApp13: AudioDeviceBlockerApp, App {
+    @StateObject private var audioContext = AudioContext.prepopulate()
+
     var body: some Scene {
         MenuBarExtra("Audio Device Blocker", image: "MenuBarIcon") {
             MenuBarView()
@@ -65,6 +98,31 @@ struct AudioDeviceBlockerApp: App {
         Settings {
             PreferencesWindowView(audioContext: audioContext)
                 .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
+        }
+    }
+}
+
+final class AudioDeviceBlockerAppOld: AudioDeviceBlockerApp, App {
+    @StateObject private var audioContext = AudioContext.prepopulate()
+
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
+
+    var body: some Scene {
+        Settings {
+            PreferencesWindowView(audioContext: audioContext)
+                .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
+        }
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    private var menuBar: OldMenuBar?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // MenuBarExtra is only available on macOS 13 and up, so spawning a menu item the old way
+        if #unavailable(macOS 13) {
+            self.menuBar = OldMenuBar.shared
+            self.menuBar?.setup()
         }
     }
 }

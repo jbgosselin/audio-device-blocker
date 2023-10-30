@@ -44,7 +44,7 @@ struct PreferencesWindowView: View {
             }
             .tag(Tabs.inputs)
         }
-        .scenePadding()
+        .padding()
     }
 }
 

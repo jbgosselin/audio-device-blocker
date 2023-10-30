@@ -20,6 +20,7 @@
 		877E23122AAD84E900D26125 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 877E23112AAD84E900D26125 /* Assets.xcassets */; };
 		877E23152AAD84E900D26125 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 877E23142AAD84E900D26125 /* Preview Assets.xcassets */; };
 		87A35F712AC77E33004C7F9A /* GeneralPreferencesPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A35F702AC77E33004C7F9A /* GeneralPreferencesPanelView.swift */; };
+		87A3E7442AEF25D3002EC3EA /* OldMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A3E7432AEF25D3002EC3EA /* OldMenuBar.swift */; };
 		87B225592AB7CA9E001F545D /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B225582AB7CA9E001F545D /* MenuBarView.swift */; };
 		87B2255B2AB7CCE3001F545D /* PreferencesWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */; };
 		87F285B82AB8810E004328B5 /* PreferencesPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */; };
@@ -43,6 +44,7 @@
 		877E23142AAD84E900D26125 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		877E23162AAD84E900D26125 /* AudioDeviceBlocker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioDeviceBlocker.entitlements; sourceTree = "<group>"; };
 		87A35F702AC77E33004C7F9A /* GeneralPreferencesPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralPreferencesPanelView.swift; sourceTree = "<group>"; };
+		87A3E7432AEF25D3002EC3EA /* OldMenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldMenuBar.swift; sourceTree = "<group>"; };
 		87B225582AB7CA9E001F545D /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		87B2255A2AB7CCE3001F545D /* PreferencesWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowView.swift; sourceTree = "<group>"; };
 		87F285B72AB8810E004328B5 /* PreferencesPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPanelView.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				8724D1D52ABF22B300D9DEFE /* BlockedDevice.swift */,
 				8724D1D72ABF316C00D9DEFE /* SavedFallbackDevice.swift */,
 				87A35F702AC77E33004C7F9A /* GeneralPreferencesPanelView.swift */,
+				87A3E7432AEF25D3002EC3EA /* OldMenuBar.swift */,
 			);
 			path = "audio-device-blocker";
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 				87B225592AB7CA9E001F545D /* MenuBarView.swift in Sources */,
 				8724D1D62ABF22B300D9DEFE /* BlockedDevice.swift in Sources */,
 				87F285B82AB8810E004328B5 /* PreferencesPanelView.swift in Sources */,
+				87A3E7442AEF25D3002EC3EA /* OldMenuBar.swift in Sources */,
 				87A35F712AC77E33004C7F9A /* GeneralPreferencesPanelView.swift in Sources */,
 				87F285BA2AB88CE7004328B5 /* AudioContext.swift in Sources */,
 				8724D1D22ABF1EE400D9DEFE /* AudioDeviceBlocker.xcdatamodeld in Sources */,
@@ -337,6 +341,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "audio-device-blocker/AudioDeviceBlocker.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -357,7 +362,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "Audio Device Blocker";
@@ -371,6 +376,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "audio-device-blocker/AudioDeviceBlocker.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -391,7 +397,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "Audio Device Blocker";
