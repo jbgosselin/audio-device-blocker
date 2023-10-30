@@ -363,7 +363,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "Audio Device Blocker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -398,7 +398,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.jbgosselin.audio-device-blocker";
 				PRODUCT_NAME = "Audio Device Blocker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
