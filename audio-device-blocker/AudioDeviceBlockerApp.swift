@@ -11,11 +11,17 @@ import UserNotifications
 import ServiceManagement
 
 @main
-struct AudioDeviceBlockerApp: App {
-    @StateObject private var audioContext = AudioContext.prepopulate()
+struct AudioDeviceBlockerAppMain {
+    static func main() {
+        if #available(macOS 13, *) {
+            return AudioDeviceBlockerApp13.main()
+        } else {
+            return AudioDeviceBlockerAppOld.main()
+        }
+    }
+}
 
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-
+class AudioDeviceBlockerApp {
     static let persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "AudioDeviceBlocker")
         container.loadPersistentStores { description, error in
@@ -79,7 +85,28 @@ struct AudioDeviceBlockerApp: App {
         }
         #endif
     }
-    
+}
+
+@available(macOS 13, *)
+final class AudioDeviceBlockerApp13: AudioDeviceBlockerApp, App {
+    @StateObject private var audioContext = AudioContext.prepopulate()
+
+    var body: some Scene {
+        MenuBarExtra("Audio Device Blocker", image: "MenuBarIcon") {
+            MenuBarView()
+        }
+        Settings {
+            PreferencesWindowView(audioContext: audioContext)
+                .environment(\.managedObjectContext, AudioDeviceBlockerApp.persistentContainer.viewContext)
+        }
+    }
+}
+
+final class AudioDeviceBlockerAppOld: AudioDeviceBlockerApp, App {
+    @StateObject private var audioContext = AudioContext.prepopulate()
+
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
+
     var body: some Scene {
         Settings {
             PreferencesWindowView(audioContext: audioContext)
@@ -88,83 +115,14 @@ struct AudioDeviceBlockerApp: App {
     }
 }
 
-class MenuBar {
-    static let shared = MenuBar()
-
-    private lazy var statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-
-    private lazy var menu: NSMenu = {
-        let menu = NSMenu()
-
-        let appNameItem = NSMenuItem(title: "Audio Device Blocker", action: nil, keyEquivalent: "")
-        appNameItem.isEnabled = false
-
-        let openSettingsItem = {
-            if #available(macOS 14.0, *) {
-                let testItem = NSMenuItem()
-                testItem.view = NSHostingView(rootView: SettingsLink())
-                return testItem
-            } else {
-                return NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: "")
-            }
-        }()
-
-        let aboutItem = NSMenuItem(title: "About", action: #selector(openAbout), keyEquivalent: "")
-
-        let quitItem = NSMenuItem(title: "Quit", action: #selector(quit), keyEquivalent: "")
-
-        menu.items = [
-            appNameItem,
-            .separator(),
-            openSettingsItem,
-            .separator(),
-            aboutItem,
-            quitItem
-        ]
-
-        menu.items.forEach { $0.target = self }
-
-        return menu
-    }()
-
-    @objc private func quit() {
-        NSApplication.shared.terminate(self)
-    }
-
-    @objc private func openAbout() {
-        NSApplication.shared.orderFrontStandardAboutPanel(self)
-    }
-
-    @objc private func openSettings() {
-        if #available(macOS 13.0, *) {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: self)
-        } else {
-            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: self)
-        }
-    }
-
-    init() {
-        if let button = statusItem.button {
-            button.image = NSImage(named: "MenuBarIcon")
-//            button.action = #selector(statusItemAction(sender:))
-            button.target = self
-        }
-    }
-
-    func setup() {
-        statusItem.menu = menu
-
-        self.statusItem.isVisible = true
-    }
-}
-
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private var menuBar: MenuBar?
+    private var menuBar: OldMenuBar?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("Hello world !")
-
-        self.menuBar = MenuBar.shared
-        self.menuBar?.setup()
+        // MenuBarExtra is only available on macOS 13 and up, so spawning a menu item the old way
+        if #unavailable(macOS 13) {
+            self.menuBar = OldMenuBar.shared
+            self.menuBar?.setup()
+        }
     }
 }
