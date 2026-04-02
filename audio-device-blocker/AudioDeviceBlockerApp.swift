@@ -88,7 +88,7 @@ class AudioDeviceBlockerApp {
 }
 
 @available(macOS 13, *)
-final class AudioDeviceBlockerApp13: AudioDeviceBlockerApp, App {
+struct AudioDeviceBlockerApp13: App {
     @StateObject private var audioContext = AudioContext.prepopulate()
 
     var body: some Scene {
@@ -102,7 +102,7 @@ final class AudioDeviceBlockerApp13: AudioDeviceBlockerApp, App {
     }
 }
 
-final class AudioDeviceBlockerAppOld: AudioDeviceBlockerApp, App {
+struct AudioDeviceBlockerAppOld: App {
     @StateObject private var audioContext = AudioContext.prepopulate()
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
